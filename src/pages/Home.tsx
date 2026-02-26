@@ -1,6 +1,9 @@
+import { Carousel } from '../components/Carousel';
+
 export function Home() {
   return (
     <div>
+      <Carousel />
       <section className="relative py-24 px-4 overflow-hidden">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="font-display text-5xl md:text-6xl font-bold text-ooo-cream mb-6">
