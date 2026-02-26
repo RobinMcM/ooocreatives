@@ -54,8 +54,8 @@ export function Carousel() {
             key={i}
             type="button"
             onClick={() => setCurrent(i)}
-            className={`h-2 w-2 rounded-full transition-colors ${
-              i === current ? 'bg-ooo-accent w-6' : 'bg-ooo-muted/60 hover:bg-ooo-muted'
+            className={`min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 rounded-full transition-colors flex items-center justify-center p-2 md:p-0 ${
+              i === current ? 'bg-ooo-accent w-4 h-4 md:w-6 md:h-2' : 'bg-ooo-muted/60 hover:bg-ooo-muted w-2 h-2 md:h-2 md:w-2'
             }`}
             aria-label={`Go to slide ${i + 1}`}
             aria-current={i === current ? 'true' : undefined}
@@ -63,11 +63,11 @@ export function Carousel() {
         ))}
       </div>
 
-      <div className="absolute left-2 right-2 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none md:pointer-events-auto">
+      <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 flex justify-between px-2 md:px-2 pointer-events-none md:pointer-events-auto">
         <button
           type="button"
           onClick={() => setCurrent((c) => (c - 1 + slides.length) % slides.length)}
-          className="p-2 rounded-full bg-ooo-black/50 text-ooo-cream hover:bg-ooo-accent transition-colors pointer-events-auto"
+          className="min-h-[44px] min-w-[44px] p-2 rounded-full bg-ooo-black/50 text-ooo-cream hover:bg-ooo-accent transition-colors pointer-events-auto flex items-center justify-center"
           aria-label="Previous slide"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -77,7 +77,7 @@ export function Carousel() {
         <button
           type="button"
           onClick={() => setCurrent((c) => (c + 1) % slides.length)}
-          className="p-2 rounded-full bg-ooo-black/50 text-ooo-cream hover:bg-ooo-accent transition-colors pointer-events-auto"
+          className="min-h-[44px] min-w-[44px] p-2 rounded-full bg-ooo-black/50 text-ooo-cream hover:bg-ooo-accent transition-colors pointer-events-auto flex items-center justify-center"
           aria-label="Next slide"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

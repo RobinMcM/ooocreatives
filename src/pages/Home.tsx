@@ -4,12 +4,12 @@ export function Home() {
   return (
     <div>
       <Carousel />
-      <section className="relative py-24 px-4 overflow-hidden">
+      <section className="relative py-12 md:py-24 px-4 overflow-hidden">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="font-display text-5xl md:text-6xl font-bold text-ooo-cream mb-6">
+          <h1 className="font-display text-4xl md:text-6xl font-bold text-ooo-cream mb-6">
             Out of Office Creatives
           </h1>
-          <p className="text-xl text-ooo-muted max-w-2xl mx-auto mb-8">
+          <p className="text-base md:text-xl text-ooo-muted max-w-2xl mx-auto mb-8">
             Theatre that doesn’t clock out. We make work that’s bleak, sharp, and
             a little bit wrong—exactly like your inbox on a Monday.
           </p>
