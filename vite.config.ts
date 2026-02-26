@@ -21,7 +21,7 @@ export default defineConfig({
         scope: '/',
         icons: [
           {
-            src: '/vite.svg',
+            src: '/favicon.svg',
             sizes: 'any',
             type: 'image/svg+xml',
             purpose: 'any',

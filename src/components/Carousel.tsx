@@ -38,8 +38,8 @@ export function Carousel() {
               className="h-full w-full object-cover"
               loading={i === 0 ? 'eager' : 'lazy'}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-ooo-black/90 via-ooo-black/40 to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 text-center">
+            <div className="absolute inset-0 bg-ooo-black/40" />
+            <div className="absolute inset-0 flex items-center justify-center p-6 md:p-10 text-center">
               <h2 className="font-display text-3xl md:text-4xl font-bold text-ooo-cream">
                 {slide.title}
               </h2>
