@@ -25,7 +25,7 @@ Next.js 16 app for `ooocreatives.com` with RapidMVP-style SuperTokens authentica
 - Frontend calls auth API at `/auth/*` on the same public origin.
 - Edge proxy forwards `https://ooocreatives.com/auth/*` to `https://auth.rapidmvp.io/auth/*`.
 - Non-auth API traffic stays app-specific.
-- Header nav uses a login icon when signed out, and a user icon with logout menu when signed in.
+- Header nav shows a `Sign In` button when signed out, and a user icon with logout menu when signed in.
 
 Reference proxy config: `Caddyfile.ooocreatives`.
 

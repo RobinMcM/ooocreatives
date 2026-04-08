@@ -146,21 +146,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <Link
                   href="/auth"
                   onClick={() => setAuthMenuOpen(false)}
-                  className={`p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ooo-accent ${
+                  className={`px-4 py-2 min-h-[44px] inline-flex items-center justify-center rounded text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ooo-accent ${
                     pathname === "/auth"
                       ? "text-ooo-accent bg-ooo-slate/40"
-                      : "text-ooo-cream hover:bg-ooo-slate"
+                      : "text-ooo-cream border border-ooo-slate hover:bg-ooo-slate"
                   }`}
-                  aria-label="Log in"
+                  aria-label="Sign in"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4m-6-5l-5-4m0 0l5-4m-5 4h12"
-                    />
-                  </svg>
+                  Sign In
                 </Link>
               )}
             </div>
@@ -204,32 +197,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   </Link>
                 </li>
               ))}
-              {!authLoading && !sessionExists && (
-                <li>
-                  <Link
-                    href="/auth"
-                    onClick={closeAllMenus}
-                    className={`block py-3 px-2 text-base font-medium min-h-[44px] flex items-center rounded transition-colors ${
-                      pathname === "/auth"
-                        ? "text-ooo-accent bg-ooo-slate/50"
-                        : "text-ooo-muted hover:text-ooo-cream hover:bg-ooo-slate/30"
-                    }`}
-                  >
-                    Login
-                  </Link>
-                </li>
-              )}
-              {!authLoading && sessionExists && (
-                <li>
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="block w-full text-left py-3 px-2 text-base font-medium min-h-[44px] rounded transition-colors text-ooo-muted hover:text-ooo-cream hover:bg-ooo-slate/30"
-                  >
-                    Logout
-                  </button>
-                </li>
-              )}
+              {/* Auth actions are available from the dedicated right-side auth control. */}
             </ul>
           </div>
         )}
