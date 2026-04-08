@@ -111,7 +111,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   <button
                     type="button"
                     onClick={() => setAuthMenuOpen((open) => !open)}
-                    className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded text-ooo-cream hover:bg-ooo-slate transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ooo-accent"
+                    className="px-2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center gap-1 rounded text-ooo-cream hover:bg-ooo-slate transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ooo-accent"
                     aria-label={authMenuOpen ? "Close user menu" : "Open user menu"}
                     aria-haspopup="menu"
                     aria-expanded={authMenuOpen}
@@ -121,22 +121,37 @@ export function Layout({ children }: { children: React.ReactNode }) {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M16 14a4 4 0 10-8 0m8 0a4 4 0 01-8 0m8 0v1a3 3 0 01-3 3H11a3 3 0 01-3-3v-1m8 0H8"
+                        d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.964 0A9 9 0 1112 3a9 9 0 015.982 15.725zM15 9.75A3 3 0 1112 6.75a3 3 0 013 3z"
                       />
+                    </svg>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
                   {authMenuOpen && (
                     <div
-                      className="absolute right-0 mt-2 w-48 bg-ooo-ink border border-ooo-slate rounded-md shadow-lg py-1 z-20"
+                      className="absolute right-0 mt-2 w-56 overflow-hidden rounded-xl border border-ooo-slate bg-ooo-ink/95 backdrop-blur shadow-xl z-20"
                       role="menu"
                       aria-label="User menu"
                     >
+                      <div className="px-4 py-3 border-b border-ooo-slate/70">
+                        <p className="text-xs uppercase tracking-wide text-ooo-muted">Account</p>
+                        <p className="text-sm text-ooo-cream">Signed in</p>
+                      </div>
                       <button
                         type="button"
                         onClick={handleLogout}
-                        className="block w-full text-left px-4 py-2 text-sm text-ooo-muted hover:text-ooo-cream hover:bg-ooo-slate/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ooo-accent"
+                        className="w-full inline-flex items-center gap-2 text-left px-4 py-3 text-sm text-ooo-muted hover:text-ooo-cream hover:bg-ooo-slate/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ooo-accent"
                         role="menuitem"
                       >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6.75A2.25 2.25 0 004.5 5.25v13.5A2.25 2.25 0 006.75 21h6.75a2.25 2.25 0 002.25-2.25V15m4.5-3H9m0 0l3-3m-3 3l3 3"
+                          />
+                        </svg>
                         Logout
                       </button>
                     </div>
