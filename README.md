@@ -35,12 +35,14 @@ See `.env.example`:
 
 - `NEXT_PUBLIC_WEBSITE_DOMAIN`: website origin used by SuperTokens `websiteDomain`.
 - `NEXT_PUBLIC_AUTH_API_URL`: auth API origin used by SuperTokens `apiDomain`.
+- `NEXT_PUBLIC_API_URL`: shared data API origin (profiles, roles, admin APIs).
 
 For first-party auth via edge proxy in production, both should point to the OOO web origin:
 
 ```env
 NEXT_PUBLIC_WEBSITE_DOMAIN=https://ooocreatives.com
 NEXT_PUBLIC_AUTH_API_URL=https://ooocreatives.com
+NEXT_PUBLIC_API_URL=https://api.rapidmvp.io
 ```
 
 ## Edge proxy requirement
