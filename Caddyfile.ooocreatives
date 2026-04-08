@@ -1,0 +1,20 @@
+{
+  email ops@ooocreatives.com
+}
+
+ooocreatives.com, www.ooocreatives.com {
+  encode zstd gzip
+
+  # Proxy SuperTokens auth endpoints to the shared RapidMVP auth domain.
+  handle /auth* {
+    reverse_proxy https://auth.rapidmvp.io {
+      header_up Host auth.rapidmvp.io
+      header_up X-Forwarded-Host {host}
+      header_up X-Forwarded-Proto {scheme}
+      header_up X-Forwarded-For {remote_host}
+    }
+  }
+
+  # OOO web app origin for everything else.
+  reverse_proxy 127.0.0.1:3000
+}
