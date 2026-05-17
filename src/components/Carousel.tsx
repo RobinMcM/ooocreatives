@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 
 const DEFAULT_SLIDES = [
-  { id: "faustus", title: "Dr Faustus", imageUrl: "https://picsum.photos/seed/faustus/1200/600" },
-  { id: "womeninwar", title: "Women in War", imageUrl: "https://picsum.photos/seed/womeninwar/1200/600" },
-  { id: "ripper", title: "Ripper", imageUrl: "https://picsum.photos/seed/ripper/1200/600" },
-  { id: "spread", title: "Spread", imageUrl: "https://picsum.photos/seed/spread/1200/600" },
+  { id: "faustus", title: "Dr Faustus", imageUrl: "https://picsum.photos/seed/faustus/1200/600", order: 0 },
+  { id: "womeninwar", title: "Women in War", imageUrl: "https://picsum.photos/seed/womeninwar/1200/600", order: 1 },
+  { id: "ripper", title: "Ripper", imageUrl: "https://picsum.photos/seed/ripper/1200/600", order: 2 },
+  { id: "spread", title: "Spread", imageUrl: "https://picsum.photos/seed/spread/1200/600", order: 3 },
 ];
 
 const AUTOPLAY_MS = 5500;
