@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 
-const slides = [
+const DEFAULT_SLIDES = [
   { id: "faustus", title: "Dr Faustus", imageUrl: "https://picsum.photos/seed/faustus/1200/600" },
   { id: "womeninwar", title: "Women in War", imageUrl: "https://picsum.photos/seed/womeninwar/1200/600" },
   { id: "ripper", title: "Ripper", imageUrl: "https://picsum.photos/seed/ripper/1200/600" },
@@ -12,15 +12,50 @@ const slides = [
 
 const AUTOPLAY_MS = 5500;
 
+interface CarouselItem {
+  id: string;
+  title: string;
+  imageUrl: string;
+  order: number;
+}
+
 export function Carousel() {
   const [current, setCurrent] = useState(0);
+  const [slides, setSlides] = useState<CarouselItem[]>(DEFAULT_SLIDES);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Fetch carousel items from API
+    const fetchCarouselItems = async () => {
+      try {
+        const response = await fetch("/api/carousel");
+        if (response.ok) {
+          const items = await response.json();
+          // Sort by order property
+          const sortedItems = items.sort((a: CarouselItem, b: CarouselItem) => a.order - b.order);
+          if (sortedItems.length > 0) {
+            setSlides(sortedItems);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch carousel items:", error);
+        // Use default slides on error
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCarouselItems();
+  }, []);
+
+  useEffect(() => {
+    if (isLoading || slides.length === 0) return;
+    
     const t = setInterval(() => {
       setCurrent((c) => (c + 1) % slides.length);
     }, AUTOPLAY_MS);
     return () => clearInterval(t);
-  }, []);
+  }, [slides.length, isLoading]);
 
   return (
     <section className="relative w-full overflow-hidden flex justify-center" aria-label="Featured shows">
