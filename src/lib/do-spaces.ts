@@ -91,6 +91,59 @@ export async function saveCarouselMetadata(items: CarouselItem[]): Promise<void>
   );
 }
 
+// ── Training Lessons ──────────────────────────────────────────────────────────
+
+export interface Lesson {
+  id: string;
+  title: string;
+  photoUrl: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export async function getLessonsMetadata(): Promise<Lesson[]> {
+  try {
+    const response = await spacesClient.send(
+      new GetObjectCommand({ Bucket: SPACES_NAME, Key: "training/lessons.json" })
+    );
+    const body = await response.Body?.transformToString();
+    return body ? JSON.parse(body) : [];
+  } catch (error: any) {
+    if (error.name === "NoSuchKey") return [];
+    throw error;
+  }
+}
+
+export async function saveLessonsMetadata(lessons: Lesson[]): Promise<void> {
+  await spacesClient.send(
+    new PutObjectCommand({
+      Bucket: SPACES_NAME,
+      Key: "training/lessons.json",
+      Body: JSON.stringify(lessons, null, 2),
+      ContentType: "application/json",
+    })
+  );
+}
+
+export async function uploadLessonPhoto(
+  file: Buffer,
+  filename: string,
+  mimeType: string
+): Promise<string> {
+  const key = `training/${Date.now()}-${filename}`;
+  await spacesClient.send(
+    new PutObjectCommand({
+      Bucket: SPACES_NAME,
+      Key: key,
+      Body: file,
+      ContentType: mimeType,
+      ACL: "public-read",
+    })
+  );
+  return `https://${SPACES_NAME}.${SPACES_ENDPOINT}/${key}`;
+}
+
 // ── Actors ────────────────────────────────────────────────────────────────────
 
 export interface Actor {
