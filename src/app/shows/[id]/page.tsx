@@ -25,6 +25,10 @@ export default async function ShowPage({
         ← Back to home
       </Link>
 
+      <h1 className="font-display text-4xl md:text-5xl font-bold text-ooo-cream text-center mb-6">
+        {show.title}
+      </h1>
+
       <div className="relative aspect-[2/1] w-full rounded-lg overflow-hidden bg-ooo-slate mb-8">
         <Image
           src={show.imageUrl}
@@ -34,10 +38,6 @@ export default async function ShowPage({
           priority
         />
       </div>
-
-      <h1 className="font-display text-4xl md:text-5xl font-bold text-ooo-cream mb-4">
-        {show.title}
-      </h1>
 
       <ActorSection showId={id} />
     </div>
