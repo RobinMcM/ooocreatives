@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useSessionContext } from "supertokens-auth-react/recipe/session";
 import Session from "supertokens-auth-react/recipe/session";
 
 const navLinks = [
@@ -14,34 +15,12 @@ const navLinks = [
 export function Layout({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [authMenuOpen, setAuthMenuOpen] = useState(false);
-  const [sessionExists, setSessionExists] = useState(false);
-  const [authLoading, setAuthLoading] = useState(true);
+  const sessionContext = useSessionContext();
+  const sessionExists = !sessionContext.loading && sessionContext.doesSessionExist;
+  const authLoading = sessionContext.loading;
   const pathname = usePathname();
   const router = useRouter();
   const authMenuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    let mounted = true;
-
-    const checkSession = async () => {
-      try {
-        const exists = await Session.doesSessionExist();
-        if (mounted) {
-          setSessionExists(exists);
-        }
-      } finally {
-        if (mounted) {
-          setAuthLoading(false);
-        }
-      }
-    };
-
-    void checkSession();
-
-    return () => {
-      mounted = false;
-    };
-  }, [pathname]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -66,10 +45,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   const handleLogout = async () => {
     await Session.signOut();
-    setSessionExists(false);
     setAuthMenuOpen(false);
     router.push("/");
-    router.refresh();
   };
 
   const closeAllMenus = () => {
