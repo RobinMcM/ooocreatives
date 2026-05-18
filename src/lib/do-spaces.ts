@@ -53,3 +53,38 @@ export async function deleteCarouselImage(imageUrl: string): Promise<void> {
     throw error;
   }
 }
+
+const METADATA_KEY = "carousel/metadata.json";
+
+export interface CarouselItem {
+  id: string;
+  title: string;
+  imageUrl: string;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export async function getCarouselMetadata(): Promise<CarouselItem[]> {
+  try {
+    const response = await spacesClient.send(
+      new GetObjectCommand({ Bucket: SPACES_NAME, Key: METADATA_KEY })
+    );
+    const body = await response.Body?.transformToString();
+    return body ? JSON.parse(body) : [];
+  } catch (error: any) {
+    if (error.name === "NoSuchKey") return [];
+    throw error;
+  }
+}
+
+export async function saveCarouselMetadata(items: CarouselItem[]): Promise<void> {
+  await spacesClient.send(
+    new PutObjectCommand({
+      Bucket: SPACES_NAME,
+      Key: METADATA_KEY,
+      Body: JSON.stringify(items, null, 2),
+      ContentType: "application/json",
+    })
+  );
+}

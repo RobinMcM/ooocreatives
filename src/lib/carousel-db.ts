@@ -1,50 +1,23 @@
-import fs from "fs/promises";
-import path from "path";
+import type { CarouselItem } from "./do-spaces";
+import { getCarouselMetadata, saveCarouselMetadata } from "./do-spaces";
 
-export interface CarouselItem {
-  id: string;
-  title: string;
-  imageUrl: string;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
-}
+export type { CarouselItem };
 
-const DATA_DIR = path.join(process.cwd(), ".carousel-data");
-const DATA_FILE = path.join(DATA_DIR, "carousel.json");
-
-// Ensure data directory exists
-async function ensureDataDir() {
-  try {
-    await fs.mkdir(DATA_DIR, { recursive: true });
-  } catch (error) {
-    // Directory might already exist
-  }
-}
-
-// Read all carousel items
 export async function getCarouselItems(): Promise<CarouselItem[]> {
-  await ensureDataDir();
-  try {
-    const data = await fs.readFile(DATA_FILE, "utf-8");
-    return JSON.parse(data);
-  } catch {
-    return [];
-  }
+  const items = await getCarouselMetadata();
+  return items.sort((a, b) => a.order - b.order);
 }
 
-// Get a single carousel item
 export async function getCarouselItem(id: string): Promise<CarouselItem | null> {
-  const items = await getCarouselItems();
-  return items.find((item) => item.id === id) || null;
+  const items = await getCarouselMetadata();
+  return items.find((item) => item.id === id) ?? null;
 }
 
-// Create a new carousel item
 export async function createCarouselItem(
   title: string,
   imageUrl: string
 ): Promise<CarouselItem> {
-  const items = await getCarouselItems();
+  const items = await getCarouselMetadata();
   const newItem: CarouselItem = {
     id: Date.now().toString(),
     title,
@@ -53,56 +26,27 @@ export async function createCarouselItem(
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-
-  items.push(newItem);
-  await saveCarouselItems(items);
+  await saveCarouselMetadata([...items, newItem]);
   return newItem;
 }
 
-// Update a carousel item
 export async function updateCarouselItem(
   id: string,
   updates: Partial<Pick<CarouselItem, "title" | "imageUrl" | "order">>
 ): Promise<CarouselItem | null> {
-  const items = await getCarouselItems();
-  const index = items.findIndex((item) => item.id === id);
-
-  if (index === -1) {
-    return null;
-  }
-
-  items[index] = {
-    ...items[index],
-    ...updates,
-    updatedAt: new Date().toISOString(),
-  };
-
-  await saveCarouselItems(items);
-  return items[index];
+  const items = await getCarouselMetadata();
+  const idx = items.findIndex((item) => item.id === id);
+  if (idx === -1) return null;
+  items[idx] = { ...items[idx], ...updates, updatedAt: new Date().toISOString() };
+  await saveCarouselMetadata(items);
+  return items[idx];
 }
 
-// Delete a carousel item
 export async function deleteCarouselItem(id: string): Promise<boolean> {
-  const items = await getCarouselItems();
-  const index = items.findIndex((item) => item.id === id);
-
-  if (index === -1) {
-    return false;
-  }
-
-  items.splice(index, 1);
-
-  // Reorder remaining items
-  items.forEach((item, i) => {
-    item.order = i;
-  });
-
-  await saveCarouselItems(items);
+  const items = await getCarouselMetadata();
+  const filtered = items.filter((item) => item.id !== id);
+  if (filtered.length === items.length) return false;
+  filtered.forEach((item, i) => { item.order = i; });
+  await saveCarouselMetadata(filtered);
   return true;
-}
-
-// Save carousel items
-async function saveCarouselItems(items: CarouselItem[]): Promise<void> {
-  await ensureDataDir();
-  await fs.writeFile(DATA_FILE, JSON.stringify(items, null, 2));
 }
