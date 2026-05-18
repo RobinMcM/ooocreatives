@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 
 // For production, you'd want to use SuperTokens' actual backend SDK
 // For now, we'll use a simple session validation based on SuperTokens cookies
@@ -14,27 +14,18 @@ export interface Session {
 export async function getSessionForValidation(): Promise<Session | null> {
   try {
     const cookieStore = await cookies();
-    
-    // Check for SuperTokens session cookie
-    // SuperTokens typically uses 'sAccessToken' and 'sRefreshToken' cookies
+    const headerStore = await headers();
+
     const accessToken = cookieStore.get("sAccessToken")?.value;
     const refreshToken = cookieStore.get("sRefreshToken")?.value;
+    const authHeader = headerStore.get("Authorization");
+    const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
 
-    if (!accessToken && !refreshToken) {
+    if (!accessToken && !refreshToken && !bearerToken) {
       return null;
     }
 
-    // In a production environment, you should:
-    // 1. Validate the JWT signature using SuperTokens' backend SDK
-    // 2. Check token expiration
-    // 3. Parse user ID from the token
-    
-    // For now, just confirm the session exists
-    if (accessToken || refreshToken) {
-      return {};
-    }
-
-    return null;
+    return {};
   } catch (error) {
     console.error("Error validating session:", error);
     return null;
