@@ -44,9 +44,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
   }, []);
 
   const handleLogout = async () => {
-    await Session.signOut();
-    setAuthMenuOpen(false);
-    router.push("/");
+    try {
+      await Session.signOut();
+    } catch {
+      // signOut failed (e.g. CORS/network) — clear cookies manually
+    }
+    // Belt-and-suspenders: delete SuperTokens cookies directly so the
+    // server stops seeing sFrontToken regardless of signOut outcome
+    for (const name of ["sFrontToken", "sAccessToken", "sRefreshToken", "st-last-access-token-update"]) {
+      document.cookie = `${name}=; Max-Age=0; path=/; SameSite=Lax`;
+    }
+    // Full reload so React state and SuperTokens context start completely fresh
+    window.location.href = "/";
   };
 
   const closeAllMenus = () => {

@@ -21,8 +21,10 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    console.log("[POST /api/carousel] incoming Authorization header:", request.headers.get("Authorization") ?? "missing");
     // Verify user is authenticated
     const session = await getSessionForValidation();
+    console.log("[POST /api/carousel] session result:", session ? "valid" : "null → 401");
     if (!session) {
       return NextResponse.json(
         { error: "Unauthorized" },

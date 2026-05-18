@@ -7,6 +7,7 @@ import Image from "next/image";
 
 async function authHeaders(): Promise<HeadersInit> {
   const token = await Session.getAccessToken();
+  console.log("[carousel] getAccessToken result:", token ? `${token.slice(0, 30)}...` : "NULL — no token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
@@ -80,14 +81,22 @@ export default function AdminCarousel() {
 
       const url = editingId ? `/api/carousel/${editingId}` : "/api/carousel";
       const method = editingId ? "PUT" : "POST";
+      const headers = await authHeaders();
+
+      console.log("[carousel] submitting to", method, url);
+      console.log("[carousel] auth headers being sent:", JSON.stringify(headers));
 
       const response = await fetch(url, {
         method,
         body: submitFormData,
-        headers: await authHeaders(),
+        headers,
       });
 
+      console.log("[carousel] response status:", response.status);
+
       if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        console.log("[carousel] error response body:", body);
         throw new Error(
           response.status === 401 ? "Unauthorized" : "Failed to save carousel item"
         );
