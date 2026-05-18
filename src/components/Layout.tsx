@@ -25,7 +25,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       : null;
 
   if (accessTokenPayload) {
-    console.log("[auth] accessTokenPayload:", accessTokenPayload);
+    console.log("[auth] accessTokenPayload:", JSON.stringify(accessTokenPayload));
   }
 
   const roles: string[] = accessTokenPayload?.["st-role"]?.v ?? [];
