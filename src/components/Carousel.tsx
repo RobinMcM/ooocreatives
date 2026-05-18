@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 const DEFAULT_SLIDES = [
   { id: "faustus", title: "Dr Faustus", imageUrl: "https://picsum.photos/seed/faustus/1200/600", order: 0 },
@@ -79,11 +80,17 @@ export function Carousel() {
               sizes="(max-width: 1200px) 100vw, 1200px"
             />
             <div className="absolute inset-0 bg-ooo-black/40" />
-            <div className="absolute inset-0 flex items-center justify-center p-6 md:p-10 text-center">
+            <Link
+              href={`/shows/${slide.id}`}
+              className="absolute inset-0 flex flex-col items-center justify-center p-6 md:p-10 text-center group"
+            >
               <h2 className="font-display text-3xl md:text-4xl font-bold text-ooo-cream">
                 {slide.title}
               </h2>
-            </div>
+              <span className="mt-3 text-sm text-ooo-cream/60 group-hover:text-ooo-cream transition-colors">
+                View details →
+              </span>
+            </Link>
           </div>
         ))}
       </div>
