@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCarouselItem } from "@/lib/carousel-db";
+import { ActorSection } from "./ActorSection";
 
 export default async function ShowPage({
   params,
@@ -37,6 +38,8 @@ export default async function ShowPage({
       <h1 className="font-display text-4xl md:text-5xl font-bold text-ooo-cream mb-4">
         {show.title}
       </h1>
+
+      <ActorSection showId={id} />
     </div>
   );
 }
