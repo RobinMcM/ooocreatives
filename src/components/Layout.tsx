@@ -129,6 +129,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       <div className="px-4 py-3 border-b border-ooo-slate/70">
                         <p className="text-xs uppercase tracking-wide text-ooo-muted">Account</p>
                         <p className="text-sm text-ooo-cream">Signed in</p>
+                        {roles.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {roles.map((role) => (
+                              <span
+                                key={role}
+                                className="text-xs px-1.5 py-0.5 rounded bg-ooo-slate text-ooo-accent border border-ooo-accent/30"
+                              >
+                                {role}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       {isAdmin && (
                         <Link
