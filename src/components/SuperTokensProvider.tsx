@@ -4,7 +4,6 @@ import SuperTokens from "supertokens-auth-react";
 import { SuperTokensWrapper } from "supertokens-auth-react";
 import EmailPassword from "supertokens-auth-react/recipe/emailpassword";
 import Session from "supertokens-auth-react/recipe/session";
-import UserRoles from "supertokens-auth-react/recipe/userroles";
 import { appInfo } from "@/lib/supertokens/config";
 
 if (typeof window !== "undefined") {
@@ -19,7 +18,6 @@ if (typeof window !== "undefined") {
         },
       }),
       Session.init(),
-      UserRoles.init(),
     ],
   });
 }
