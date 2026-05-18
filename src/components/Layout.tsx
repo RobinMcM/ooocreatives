@@ -19,10 +19,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const sessionExists = !sessionContext.loading && sessionContext.doesSessionExist;
   const authLoading = sessionContext.loading;
 
-  const roles: string[] =
+  const accessTokenPayload =
     !sessionContext.loading && sessionContext.doesSessionExist
-      ? (sessionContext.accessTokenPayload?.["st-role"]?.v ?? [])
-      : [];
+      ? sessionContext.accessTokenPayload
+      : null;
+
+  if (accessTokenPayload) {
+    console.log("[auth] accessTokenPayload:", accessTokenPayload);
+  }
+
+  const roles: string[] = accessTokenPayload?.["st-role"]?.v ?? [];
   const isAdmin = roles.includes("Admin") || roles.includes("Super User");
   const pathname = usePathname();
   const router = useRouter();
