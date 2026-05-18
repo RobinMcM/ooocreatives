@@ -10,7 +10,6 @@ const navLinks = [
   { href: "/", label: "Home" },
   { href: "/shows", label: "Our Shows" },
   { href: "/actor-training", label: "Actor Training" },
-  { href: "/admin", label: "Admin" },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {

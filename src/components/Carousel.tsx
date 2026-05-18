@@ -4,13 +4,6 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-const DEFAULT_SLIDES = [
-  { id: "faustus", title: "Dr Faustus", imageUrl: "https://picsum.photos/seed/faustus/1200/600", order: 0 },
-  { id: "womeninwar", title: "Women in War", imageUrl: "https://picsum.photos/seed/womeninwar/1200/600", order: 1 },
-  { id: "ripper", title: "Ripper", imageUrl: "https://picsum.photos/seed/ripper/1200/600", order: 2 },
-  { id: "spread", title: "Spread", imageUrl: "https://picsum.photos/seed/spread/1200/600", order: 3 },
-];
-
 const AUTOPLAY_MS = 5500;
 
 interface CarouselItem {
@@ -22,30 +15,23 @@ interface CarouselItem {
 
 export function Carousel() {
   const [current, setCurrent] = useState(0);
-  const [slides, setSlides] = useState<CarouselItem[]>(DEFAULT_SLIDES);
+  const [slides, setSlides] = useState<CarouselItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch carousel items from API
     const fetchCarouselItems = async () => {
       try {
         const response = await fetch("/api/carousel");
         if (response.ok) {
           const items = await response.json();
-          // Sort by order property
-          const sortedItems = items.sort((a: CarouselItem, b: CarouselItem) => a.order - b.order);
-          if (sortedItems.length > 0) {
-            setSlides(sortedItems);
-          }
+          setSlides(items.sort((a: CarouselItem, b: CarouselItem) => a.order - b.order));
         }
-      } catch (error) {
-        console.error("Failed to fetch carousel items:", error);
-        // Use default slides on error
+      } catch {
+        // leave empty
       } finally {
         setIsLoading(false);
       }
     };
-
     fetchCarouselItems();
   }, []);
 
@@ -57,6 +43,8 @@ export function Carousel() {
     }, AUTOPLAY_MS);
     return () => clearInterval(t);
   }, [slides.length, isLoading]);
+
+  if (isLoading || slides.length === 0) return null;
 
   return (
     <section className="relative w-full overflow-hidden flex justify-center" aria-label="Featured shows">
