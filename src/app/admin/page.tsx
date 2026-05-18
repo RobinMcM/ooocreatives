@@ -1,4 +1,9 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useSessionContext } from "supertokens-auth-react/recipe/session";
 
 const adminSections = [
   {
@@ -20,7 +25,32 @@ const adminSections = [
   },
 ];
 
+const ADMIN_ROLES = ["Admin", "Super User"];
+
 export default function Admin() {
+  const sessionContext = useSessionContext();
+  const router = useRouter();
+
+  const roles: string[] =
+    !sessionContext.loading && sessionContext.doesSessionExist
+      ? (sessionContext.accessTokenPayload?.["st-role"]?.v ?? [])
+      : [];
+
+  const isAuthorized =
+    !sessionContext.loading &&
+    sessionContext.doesSessionExist &&
+    roles.some((r) => ADMIN_ROLES.includes(r));
+
+  useEffect(() => {
+    if (!sessionContext.loading && !isAuthorized) {
+      router.replace("/");
+    }
+  }, [sessionContext.loading, isAuthorized, router]);
+
+  if (sessionContext.loading || !isAuthorized) {
+    return null;
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-16">
       <h1 className="font-display text-4xl font-bold text-ooo-cream mb-2">Admin</h1>
