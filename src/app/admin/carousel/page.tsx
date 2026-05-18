@@ -2,7 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useSessionContext } from "supertokens-auth-react/recipe/session";
+import Session from "supertokens-auth-react/recipe/session";
 import Image from "next/image";
+
+async function authHeaders(): Promise<HeadersInit> {
+  const token = await Session.getAccessToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 interface CarouselItem {
   id: string;
@@ -78,6 +84,7 @@ export default function AdminCarousel() {
       const response = await fetch(url, {
         method,
         body: submitFormData,
+        headers: await authHeaders(),
       });
 
       if (!response.ok) {
@@ -103,6 +110,7 @@ export default function AdminCarousel() {
     try {
       const response = await fetch(`/api/carousel/${id}`, {
         method: "DELETE",
+        headers: await authHeaders(),
       });
 
       if (!response.ok) {

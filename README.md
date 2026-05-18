@@ -62,6 +62,28 @@ In the central auth partner config (same system used for MovieShaker), ensure OO
 - logout redirect URLs allowlisted
 - CORS/session-refresh origin allowlisted for `https://ooocreatives.com`
 
+## Content management pattern
+
+All content sections in this site follow the same pattern — no database is used. Text and image data for every section (carousel, shows, actor profiles, etc.) is stored in DigitalOcean Spaces:
+
+- **Images** are uploaded directly to the `carousel/`, `shows/`, `actors/` prefixes in the `rapidmvp-general-storage` bucket with `public-read` ACL.
+- **Metadata** (titles, descriptions, order, linked image URLs, etc.) is stored as a JSON file alongside the images, e.g. `carousel/metadata.json`, `shows/metadata.json`, `actors/metadata.json`.
+- The Next.js API routes read/write these JSON files on every request via `getCarouselMetadata()` / `saveCarouselMetadata()` pattern in `src/lib/do-spaces.ts`.
+- Admin pages at `/admin/<section>` are protected by SuperTokens session and provide a CRUD UI for each content section.
+
+### Adding a new content section
+
+1. Add upload/download helpers to `src/lib/do-spaces.ts` following the `getCarouselMetadata` / `saveCarouselMetadata` pattern, using a new key prefix (e.g. `shows/metadata.json`).
+2. Create a `src/lib/<section>-db.ts` that wraps those helpers with typed CRUD functions.
+3. Add API routes at `src/app/api/<section>/route.ts` and `src/app/api/<section>/[id]/route.ts` — call `getSessionForValidation()` on all mutations.
+4. Create an admin page at `src/app/admin/<section>/page.tsx` — use `Session.getAccessToken()` and pass `Authorization: Bearer <token>` on all mutating fetch calls.
+5. Add a card link to the new section on `src/app/admin/page.tsx`.
+6. Add the public display component to the relevant page.
+
+### DO Spaces image domains
+
+`next.config.ts` allows `*.digitaloceanspaces.com` as a remote image pattern so all uploaded content renders via `next/image`.
+
 ## Validation checks
 
 After deployment, run:
