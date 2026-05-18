@@ -35,10 +35,15 @@ export async function PUT(
     const title = formData.get("title") as string;
     const file = formData.get("image") as File | null;
     const orderStr = formData.get("order") as string;
+    const linkUrl = formData.get("linkUrl") as string | null;
+    const linkLabel = formData.get("linkLabel") as string | null;
 
     const updates: any = {};
     if (title) updates.title = title;
     if (orderStr) updates.order = parseInt(orderStr);
+    // Allow clearing linkUrl/linkLabel by sending empty string
+    if (linkUrl !== null) updates.linkUrl = linkUrl || undefined;
+    if (linkLabel !== null) updates.linkLabel = linkLabel || undefined;
 
     // Handle image upload if a new file is provided
     if (file && file.size > 0) {

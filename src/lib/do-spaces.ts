@@ -61,6 +61,8 @@ export interface CarouselItem {
   title: string;
   imageUrl: string;
   order: number;
+  linkUrl?: string;
+  linkLabel?: string;
   createdAt: string;
   updatedAt: string;
 }

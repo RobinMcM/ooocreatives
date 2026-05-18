@@ -35,6 +35,8 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const title = formData.get("title") as string;
     const file = formData.get("image") as File;
+    const linkUrl = (formData.get("linkUrl") as string) || undefined;
+    const linkLabel = (formData.get("linkLabel") as string) || undefined;
 
     if (!title || !file) {
       return NextResponse.json(
@@ -52,7 +54,7 @@ export async function POST(request: NextRequest) {
     );
 
     // Create carousel item
-    const item = await createCarouselItem(title, imageUrl);
+    const item = await createCarouselItem(title, imageUrl, linkUrl, linkLabel);
 
     return NextResponse.json(item, { status: 201 });
   } catch (error) {

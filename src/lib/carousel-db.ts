@@ -15,7 +15,9 @@ export async function getCarouselItem(id: string): Promise<CarouselItem | null> 
 
 export async function createCarouselItem(
   title: string,
-  imageUrl: string
+  imageUrl: string,
+  linkUrl?: string,
+  linkLabel?: string
 ): Promise<CarouselItem> {
   const items = await getCarouselMetadata();
   const newItem: CarouselItem = {
@@ -23,6 +25,8 @@ export async function createCarouselItem(
     title,
     imageUrl,
     order: items.length,
+    ...(linkUrl ? { linkUrl } : {}),
+    ...(linkLabel ? { linkLabel } : {}),
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -32,7 +36,7 @@ export async function createCarouselItem(
 
 export async function updateCarouselItem(
   id: string,
-  updates: Partial<Pick<CarouselItem, "title" | "imageUrl" | "order">>
+  updates: Partial<Pick<CarouselItem, "title" | "imageUrl" | "order" | "linkUrl" | "linkLabel">>
 ): Promise<CarouselItem | null> {
   const items = await getCarouselMetadata();
   const idx = items.findIndex((item) => item.id === id);

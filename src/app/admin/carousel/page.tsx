@@ -16,6 +16,8 @@ interface CarouselItem {
   title: string;
   imageUrl: string;
   order: number;
+  linkUrl?: string;
+  linkLabel?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -27,7 +29,7 @@ export default function AdminCarousel() {
   const [error, setError] = useState<string | null>(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ title: "", image: null as File | null });
+  const [formData, setFormData] = useState({ title: "", image: null as File | null, linkUrl: "", linkLabel: "" });
 
   // Fetch carousel items
   useEffect(() => {
@@ -59,6 +61,14 @@ export default function AdminCarousel() {
     setFormData((prev) => ({ ...prev, title: e.target.value }));
   };
 
+  const handleLinkUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, linkUrl: e.target.value }));
+  };
+
+  const handleLinkLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, linkLabel: e.target.value }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -78,6 +88,8 @@ export default function AdminCarousel() {
       if (formData.image) {
         submitFormData.append("image", formData.image);
       }
+      submitFormData.append("linkUrl", formData.linkUrl);
+      submitFormData.append("linkLabel", formData.linkLabel);
 
       const url = editingId ? `/api/carousel/${editingId}` : "/api/carousel";
       const method = editingId ? "PUT" : "POST";
@@ -102,7 +114,7 @@ export default function AdminCarousel() {
         );
       }
 
-      setFormData({ title: "", image: null });
+      setFormData({ title: "", image: null, linkUrl: "", linkLabel: "" });
       setIsAddingNew(false);
       setEditingId(null);
       await fetchItems();
@@ -136,14 +148,14 @@ export default function AdminCarousel() {
 
   const handleEdit = (item: CarouselItem) => {
     setEditingId(item.id);
-    setFormData({ title: item.title, image: null });
+    setFormData({ title: item.title, image: null, linkUrl: item.linkUrl ?? "", linkLabel: item.linkLabel ?? "" });
     setIsAddingNew(false);
   };
 
   const handleCancel = () => {
     setEditingId(null);
     setIsAddingNew(false);
-    setFormData({ title: "", image: null });
+    setFormData({ title: "", image: null, linkUrl: "", linkLabel: "" });
     setError(null);
   };
 
@@ -200,7 +212,7 @@ export default function AdminCarousel() {
             />
           </div>
 
-          <div className="mb-6">
+          <div className="mb-4">
             <label className="block text-ooo-muted text-sm font-medium mb-2">
               Image {!editingId && <span className="text-red-400">*</span>}
             </label>
@@ -215,6 +227,32 @@ export default function AdminCarousel() {
                 Selected: {formData.image.name}
               </p>
             )}
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-ooo-muted text-sm font-medium mb-2">
+              Link URL <span className="text-ooo-muted/50 font-normal">(optional — navigates off the show page)</span>
+            </label>
+            <input
+              type="url"
+              value={formData.linkUrl}
+              onChange={handleLinkUrlChange}
+              className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream placeholder-ooo-muted focus:outline-none focus:border-ooo-accent"
+              placeholder="https://example.com/book-tickets"
+            />
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-ooo-muted text-sm font-medium mb-2">
+              Link Label <span className="text-ooo-muted/50 font-normal">(optional — defaults to &ldquo;Find out more&rdquo;)</span>
+            </label>
+            <input
+              type="text"
+              value={formData.linkLabel}
+              onChange={handleLinkLabelChange}
+              className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream placeholder-ooo-muted focus:outline-none focus:border-ooo-accent"
+              placeholder="Book tickets"
+            />
           </div>
 
           <div className="flex gap-3">

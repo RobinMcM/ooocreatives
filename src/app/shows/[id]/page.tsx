@@ -29,6 +29,19 @@ export default async function ShowPage({
         {show.title}
       </h1>
 
+      {show.linkUrl && (
+        <div className="flex justify-center mb-6">
+          <a
+            href={show.linkUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-8 py-3 bg-ooo-accent text-ooo-black rounded-lg font-semibold hover:bg-ooo-accent/80 transition-colors"
+          >
+            {show.linkLabel || "Find out more"}
+          </a>
+        </div>
+      )}
+
       <div className="relative aspect-[2/1] w-full rounded-lg overflow-hidden bg-ooo-slate mb-8">
         <Image
           src={show.imageUrl}
