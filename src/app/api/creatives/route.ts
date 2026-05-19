@@ -5,11 +5,11 @@ import { uploadGlobalActorPhoto } from "@/lib/do-spaces";
 
 export async function GET() {
   try {
-    const actors = await getGlobalActors();
-    return NextResponse.json(actors);
+    const creatives = await getGlobalActors();
+    return NextResponse.json(creatives);
   } catch (error) {
-    console.error("Error fetching actors:", error);
-    return NextResponse.json({ error: "Failed to fetch actors" }, { status: 500 });
+    console.error("Error fetching creatives:", error);
+    return NextResponse.json({ error: "Failed to fetch creatives" }, { status: 500 });
   }
 }
 
@@ -29,11 +29,11 @@ export async function POST(request: NextRequest) {
 
     const buffer = await file.arrayBuffer();
     const photoUrl = await uploadGlobalActorPhoto(Buffer.from(buffer), file.name, file.type);
-    const actor = await createGlobalActor(name, photoUrl, bio);
+    const creative = await createGlobalActor(name, photoUrl, bio);
 
-    return NextResponse.json(actor, { status: 201 });
+    return NextResponse.json(creative, { status: 201 });
   } catch (error) {
-    console.error("Error creating actor:", error);
-    return NextResponse.json({ error: "Failed to create actor" }, { status: 500 });
+    console.error("Error creating creative:", error);
+    return NextResponse.json({ error: "Failed to create creative" }, { status: 500 });
   }
 }

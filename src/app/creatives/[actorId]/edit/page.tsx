@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { getGlobalActor } from "@/lib/global-actors-db";
-import { ActorForm } from "@/components/ActorForm";
+import { CreativeForm } from "@/components/CreativeForm";
 
-export default async function EditActorPage({
+export default async function EditCreativePage({
   params,
 }: {
   params: Promise<{ actorId: string }>;
@@ -12,5 +12,5 @@ export default async function EditActorPage({
 
   if (!actor) notFound();
 
-  return <ActorForm actor={actor} />;
+  return <CreativeForm actor={actor} />;
 }

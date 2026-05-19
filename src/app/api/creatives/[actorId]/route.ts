@@ -8,9 +8,9 @@ export async function GET(
   { params }: { params: Promise<{ actorId: string }> }
 ) {
   const { actorId } = await params;
-  const actor = await getGlobalActor(actorId);
-  if (!actor) return NextResponse.json({ error: "Actor not found" }, { status: 404 });
-  return NextResponse.json(actor);
+  const creative = await getGlobalActor(actorId);
+  if (!creative) return NextResponse.json({ error: "Creative not found" }, { status: 404 });
+  return NextResponse.json(creative);
 }
 
 export async function PUT(
@@ -21,8 +21,8 @@ export async function PUT(
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { actorId } = await params;
-  const actor = await getGlobalActor(actorId);
-  if (!actor) return NextResponse.json({ error: "Actor not found" }, { status: 404 });
+  const creative = await getGlobalActor(actorId);
+  if (!creative) return NextResponse.json({ error: "Creative not found" }, { status: 404 });
 
   const formData = await request.formData();
   const name = formData.get("name") as string | null;
@@ -38,7 +38,7 @@ export async function PUT(
   }
 
   const updated = await updateGlobalActor(actorId, updates);
-  if (!updated) return NextResponse.json({ error: "Failed to update actor" }, { status: 500 });
+  if (!updated) return NextResponse.json({ error: "Failed to update creative" }, { status: 500 });
 
   return NextResponse.json(updated);
 }
@@ -52,7 +52,7 @@ export async function DELETE(
 
   const { actorId } = await params;
   const deleted = await deleteGlobalActor(actorId);
-  if (!deleted) return NextResponse.json({ error: "Actor not found" }, { status: 404 });
+  if (!deleted) return NextResponse.json({ error: "Creative not found" }, { status: 404 });
 
   return NextResponse.json({ success: true });
 }

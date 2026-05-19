@@ -45,7 +45,7 @@ export function CharacterSection({ showId }: { showId: string }) {
       .then(setCharacters)
       .catch(() => {});
 
-    fetch("/api/actors")
+    fetch("/api/creatives")
       .then((r) => r.json())
       .then(setActors)
       .catch(() => {});
@@ -174,7 +174,7 @@ export function CharacterSection({ showId }: { showId: string }) {
                         onClick={() => handleLinkActor(char.id, null)}
                         className="mt-2 text-xs text-ooo-muted hover:text-red-400 transition-colors"
                       >
-                        Unlink actor
+                        Unlink creative
                       </button>
                     )}
                   </>
@@ -188,12 +188,12 @@ export function CharacterSection({ showId }: { showId: string }) {
                           onClick={() => setLinkingCharId(isPickerOpen ? null : char.id)}
                           className="text-xs text-ooo-accent hover:text-ooo-accent/80 transition-colors font-medium"
                         >
-                          {isPickerOpen ? "Cancel" : "Link Actor"}
+                          {isPickerOpen ? "Cancel" : "Link Creative"}
                         </button>
                         {isPickerOpen && (
                           <div className="absolute left-0 top-6 z-20 w-48 max-h-48 overflow-y-auto rounded-lg border border-ooo-slate bg-ooo-ink shadow-xl">
                             {actors.length === 0 ? (
-                              <p className="px-3 py-2 text-xs text-ooo-muted">No actors registered yet.</p>
+                              <p className="px-3 py-2 text-xs text-ooo-muted">No creatives registered yet.</p>
                             ) : (
                               actors.map((a) => (
                                 <button

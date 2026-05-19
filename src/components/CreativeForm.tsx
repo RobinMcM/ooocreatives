@@ -10,7 +10,7 @@ async function authHeaders(): Promise<HeadersInit> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-export function ActorForm({ actor }: { actor?: GlobalActor }) {
+export function CreativeForm({ actor }: { actor?: GlobalActor }) {
   const router = useRouter();
   const isEditing = !!actor;
 
@@ -33,7 +33,7 @@ export function ActorForm({ actor }: { actor?: GlobalActor }) {
       fd.append("bio", bio);
       if (photo) fd.append("photo", photo);
 
-      const url = isEditing ? `/api/actors/${actor.id}` : "/api/actors";
+      const url = isEditing ? `/api/creatives/${actor.id}` : "/api/creatives";
       const response = await fetch(url, {
         method: isEditing ? "PUT" : "POST",
         body: fd,
@@ -42,10 +42,10 @@ export function ActorForm({ actor }: { actor?: GlobalActor }) {
 
       if (!response.ok) {
         const body = await response.json().catch(() => ({}));
-        throw new Error(response.status === 401 ? "Unauthorized" : (body.error ?? "Failed to save actor"));
+        throw new Error(response.status === 401 ? "Unauthorized" : (body.error ?? "Failed to save creative"));
       }
 
-      router.push("/actors");
+      router.push("/creatives");
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
       setSaving(false);
@@ -55,7 +55,7 @@ export function ActorForm({ actor }: { actor?: GlobalActor }) {
   return (
     <div className="max-w-lg mx-auto px-4 py-12">
       <h1 className="font-display text-4xl font-bold text-ooo-cream mb-8">
-        {isEditing ? "Edit Actor" : "Add Actor"}
+        {isEditing ? "Edit Creative" : "Add Creative"}
       </h1>
 
       {error && (
@@ -71,7 +71,7 @@ export function ActorForm({ actor }: { actor?: GlobalActor }) {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Actor name"
+            placeholder="Creative name"
             className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream placeholder-ooo-muted focus:outline-none focus:border-ooo-accent"
             required
           />
@@ -110,11 +110,11 @@ export function ActorForm({ actor }: { actor?: GlobalActor }) {
             disabled={saving}
             className="px-6 py-2 bg-ooo-accent text-ooo-black rounded-lg font-semibold hover:bg-ooo-accent/80 transition-colors disabled:opacity-50"
           >
-            {saving ? "Saving…" : isEditing ? "Update Actor" : "Add Actor"}
+            {saving ? "Saving…" : isEditing ? "Update Creative" : "Add Creative"}
           </button>
           <button
             type="button"
-            onClick={() => router.push("/actors")}
+            onClick={() => router.push("/creatives")}
             className="px-6 py-2 bg-ooo-ink text-ooo-cream rounded-lg font-semibold hover:bg-ooo-ink/80 transition-colors"
           >
             Cancel
