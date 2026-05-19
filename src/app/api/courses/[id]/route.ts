@@ -28,8 +28,6 @@ export async function PUT(
   const title = formData.get("title") as string | null;
   const file = formData.get("photo") as File | null;
   const description = formData.get("description") as string | null;
-  const date = formData.get("date") as string | null;
-  const time = formData.get("time") as string | null;
   const durationRaw = formData.get("durationMinutes") as string | null;
   const location = formData.get("location") as string | null;
   const locationUrl = formData.get("locationUrl") as string | null;
@@ -37,8 +35,6 @@ export async function PUT(
   const updates: Parameters<typeof updateCourseTemplate>[1] = {};
   if (title) updates.title = title;
   if (description !== null) updates.description = description;
-  if (date !== null) updates.date = date || undefined;
-  if (time !== null) updates.time = time || undefined;
   if (durationRaw !== null) updates.durationMinutes = durationRaw ? parseInt(durationRaw, 10) : undefined;
   if (location !== null) updates.location = location || undefined;
   if (locationUrl !== null) updates.locationUrl = locationUrl || undefined;

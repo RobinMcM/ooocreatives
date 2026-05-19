@@ -66,8 +66,6 @@ export function CourseForm({ course }: { course?: CourseTemplate }) {
   const [title, setTitle] = useState(course?.title ?? "");
   const [photo, setPhoto] = useState<File | null>(null);
   const [description, setDescription] = useState(course?.description ?? "");
-  const [date, setDate] = useState(course?.date ?? "");
-  const [time, setTime] = useState(course?.time ?? "");
   const [durationMinutes, setDurationMinutes] = useState(course?.durationMinutes?.toString() ?? "");
   const [location, setLocation] = useState(course?.location ?? "");
   const [locationUrl, setLocationUrl] = useState(course?.locationUrl ?? "");
@@ -85,8 +83,6 @@ export function CourseForm({ course }: { course?: CourseTemplate }) {
       const fd = new FormData();
       fd.append("title", title);
       fd.append("description", description);
-      fd.append("date", date);
-      fd.append("time", time);
       fd.append("durationMinutes", durationMinutes);
       fd.append("location", location);
       fd.append("locationUrl", locationUrl);
@@ -134,36 +130,16 @@ export function CourseForm({ course }: { course?: CourseTemplate }) {
           />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-ooo-muted text-sm font-medium mb-2">Date <span className="text-ooo-muted/50 font-normal">(optional)</span></label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream focus:outline-none focus:border-ooo-accent"
-            />
-          </div>
-          <div>
-            <label className="block text-ooo-muted text-sm font-medium mb-2">Time <span className="text-ooo-muted/50 font-normal">(optional)</span></label>
-            <input
-              type="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream focus:outline-none focus:border-ooo-accent"
-            />
-          </div>
-          <div>
-            <label className="block text-ooo-muted text-sm font-medium mb-2">Duration <span className="text-ooo-muted/50 font-normal">(mins)</span></label>
-            <input
-              type="number"
-              min="1"
-              value={durationMinutes}
-              onChange={(e) => setDurationMinutes(e.target.value)}
-              placeholder="e.g. 90"
-              className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream placeholder-ooo-muted focus:outline-none focus:border-ooo-accent"
-            />
-          </div>
+        <div className="w-full sm:w-48">
+          <label className="block text-ooo-muted text-sm font-medium mb-2">Duration <span className="text-ooo-muted/50 font-normal">(mins, optional)</span></label>
+          <input
+            type="number"
+            min="1"
+            value={durationMinutes}
+            onChange={(e) => setDurationMinutes(e.target.value)}
+            placeholder="e.g. 90"
+            className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream placeholder-ooo-muted focus:outline-none focus:border-ooo-accent"
+          />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

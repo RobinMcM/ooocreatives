@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getCourseTemplate } from "@/lib/course-templates-db";
+import { CourseDatesSection } from "@/components/CourseDatesSection";
 
 export default async function CoursePage({
   params,
@@ -18,14 +19,8 @@ export default async function CoursePage({
         <h1 className="font-display text-4xl md:text-5xl font-bold text-ooo-cream text-center">
           {course.title}
         </h1>
-        {(course.date || course.time || course.durationMinutes) && (
-          <p className="text-ooo-muted flex flex-wrap gap-x-3">
-            {course.date && (
-              <span>{new Date(course.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</span>
-            )}
-            {course.time && <span>{course.time}</span>}
-            {course.durationMinutes && <span>{course.durationMinutes} mins</span>}
-          </p>
+        {course.durationMinutes && (
+          <p className="text-ooo-muted">{course.durationMinutes} mins</p>
         )}
       </div>
 
@@ -49,6 +44,8 @@ export default async function CoursePage({
           dangerouslySetInnerHTML={{ __html: course.description }}
         />
       )}
+
+      <CourseDatesSection courseId={id} />
     </div>
   );
 }

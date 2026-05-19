@@ -18,16 +18,11 @@ interface Course {
   title: string;
   photoUrl: string;
   description: string;
-  date?: string;
-  time?: string;
   durationMinutes?: number;
   location?: string;
   locationUrl?: string;
 }
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
-}
 
 export default function Courses() {
   const { roles, loading: rolesLoading } = useUserRoles();
@@ -101,12 +96,8 @@ export default function Courses() {
                   <h2 className="font-display text-xl font-semibold text-ooo-cream group-hover:text-ooo-accent transition-colors">
                     {course.title}
                   </h2>
-                  {(course.date || course.time || course.durationMinutes) && (
-                    <p className="text-xs text-ooo-muted mt-1 flex flex-wrap gap-x-2">
-                      {course.date && <span>{formatDate(course.date)}</span>}
-                      {course.time && <span>{course.time}</span>}
-                      {course.durationMinutes && <span>{course.durationMinutes} mins</span>}
-                    </p>
+                  {course.durationMinutes && (
+                    <p className="text-xs text-ooo-muted mt-1">{course.durationMinutes} mins</p>
                   )}
                   {course.location && (
                     <p className="text-xs text-ooo-muted mt-0.5">{course.location}</p>

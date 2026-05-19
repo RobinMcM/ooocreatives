@@ -16,8 +16,6 @@ export async function createCourseTemplate(
   title: string,
   photoUrl: string,
   description: string,
-  date?: string,
-  time?: string,
   durationMinutes?: number,
   location?: string,
   locationUrl?: string
@@ -28,8 +26,6 @@ export async function createCourseTemplate(
     title,
     photoUrl,
     description,
-    ...(date ? { date } : {}),
-    ...(time ? { time } : {}),
     ...(durationMinutes != null ? { durationMinutes } : {}),
     ...(location ? { location } : {}),
     ...(locationUrl ? { locationUrl } : {}),
@@ -41,7 +37,7 @@ export async function createCourseTemplate(
 
 export async function updateCourseTemplate(
   id: string,
-  updates: Partial<Pick<CourseTemplate, "title" | "photoUrl" | "description" | "date" | "time" | "durationMinutes" | "location" | "locationUrl">>
+  updates: Partial<Pick<CourseTemplate, "title" | "photoUrl" | "description" | "durationMinutes" | "location" | "locationUrl">>
 ): Promise<CourseTemplate | null> {
   const templates = await getCourseTemplatesMetadata();
   const idx = templates.findIndex((t) => t.id === id);
