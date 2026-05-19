@@ -1,5 +1,6 @@
 import type { Actor } from "./do-spaces";
 import { getActorsMetadata, saveActorsMetadata } from "./do-spaces";
+import { getShows } from "./shows-db";
 
 export type { Actor };
 
@@ -43,6 +44,12 @@ export async function updateActor(
   actors[idx] = { ...actors[idx], ...updates };
   await saveActorsMetadata(showId, actors);
   return actors[idx];
+}
+
+export async function getAllActors(): Promise<Actor[]> {
+  const shows = await getShows();
+  const arrays = await Promise.all(shows.map((s) => getActors(s.id)));
+  return arrays.flat();
 }
 
 export async function deleteActor(showId: string, actorId: string): Promise<boolean> {
