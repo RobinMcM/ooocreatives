@@ -12,6 +12,8 @@ interface ShowItem {
   imageUrl: string;
   order: number;
   featuredOnHomepage?: boolean;
+  linkUrl?: string;
+  linkLabel?: string;
 }
 
 export function ShowsCarousel() {
@@ -84,6 +86,20 @@ export function ShowsCarousel() {
                 View details →
               </span>
             </Link>
+            {slide.linkUrl && (
+              <a
+                href={slide.linkUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={slide.linkLabel || "Buy tickets"}
+                className="absolute bottom-4 right-4 md:bottom-6 md:right-6 z-10 flex items-center gap-2 px-3 py-2 rounded-lg bg-ooo-accent/90 hover:bg-ooo-accent text-ooo-cream text-sm font-semibold transition-colors shadow-lg"
+              >
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                </svg>
+                <span className="hidden sm:inline">{slide.linkLabel || "Buy tickets"}</span>
+              </a>
+            )}
           </div>
         ))}
       </div>
