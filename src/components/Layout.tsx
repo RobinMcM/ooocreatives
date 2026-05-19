@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useSessionContext } from "supertokens-auth-react/recipe/session";
 import Session from "supertokens-auth-react/recipe/session";
+import { useUserRoles } from "@/lib/useUserRoles";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -18,18 +19,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const sessionContext = useSessionContext();
   const sessionExists = !sessionContext.loading && sessionContext.doesSessionExist;
   const authLoading = sessionContext.loading;
-
-  const accessTokenPayload =
-    !sessionContext.loading && sessionContext.doesSessionExist
-      ? sessionContext.accessTokenPayload
-      : null;
-
-  if (accessTokenPayload) {
-    console.log("[auth] accessTokenPayload:", JSON.stringify(accessTokenPayload));
-  }
-
-  const roles: string[] = accessTokenPayload?.["st-role"]?.v ?? [];
-  const isAdmin = roles.includes("Admin") || roles.includes("Super User");
+  const { roles } = useUserRoles();
+  const isAdmin = roles.some((r) => ["admin", "super user", "Admin", "Super User"].includes(r));
   const pathname = usePathname();
   const router = useRouter();
   const authMenuRef = useRef<HTMLDivElement>(null);

@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useSessionContext } from "supertokens-auth-react/recipe/session";
+import { useUserRoles } from "@/lib/useUserRoles";
 
 const adminSections = [
   {
@@ -25,29 +26,21 @@ const adminSections = [
   },
 ];
 
-const ADMIN_ROLES = ["Admin", "Super User"];
+const ADMIN_ROLES = ["admin", "super user", "Admin", "Super User"];
 
 export default function Admin() {
-  const sessionContext = useSessionContext();
+  const { roles, loading } = useUserRoles();
   const router = useRouter();
 
-  const roles: string[] =
-    !sessionContext.loading && sessionContext.doesSessionExist
-      ? (sessionContext.accessTokenPayload?.["st-role"]?.v ?? [])
-      : [];
-
-  const isAuthorized =
-    !sessionContext.loading &&
-    sessionContext.doesSessionExist &&
-    roles.some((r) => ADMIN_ROLES.includes(r));
+  const isAuthorized = !loading && roles.some((r) => ADMIN_ROLES.includes(r));
 
   useEffect(() => {
-    if (!sessionContext.loading && !isAuthorized) {
+    if (!loading && !isAuthorized) {
       router.replace("/");
     }
-  }, [sessionContext.loading, isAuthorized, router]);
+  }, [loading, isAuthorized, router]);
 
-  if (sessionContext.loading || !isAuthorized) {
+  if (loading || !isAuthorized) {
     return null;
   }
 
