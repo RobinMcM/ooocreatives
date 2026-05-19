@@ -9,6 +9,8 @@ import Session from "supertokens-auth-react/recipe/session";
 interface Actor {
   id: string;
   name: string;
+  characterName?: string;
+  bio?: string;
   photoUrl: string;
 }
 
@@ -70,7 +72,12 @@ export function ActorSection({ showId }: { showId: string }) {
       {actors.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {actors.map((actor) => (
-            <div key={actor.id} className="relative text-center group">
+            <div key={actor.id} className="relative group">
+              {actor.characterName && (
+                <p className="font-display text-sm font-semibold text-ooo-accent mb-1 truncate">
+                  {actor.characterName}
+                </p>
+              )}
               <div className="relative aspect-square rounded-lg overflow-hidden bg-ooo-slate mb-2">
                 <Image
                   src={actor.photoUrl}
@@ -103,6 +110,9 @@ export function ActorSection({ showId }: { showId: string }) {
                 )}
               </div>
               <p className="text-sm font-medium text-ooo-cream">{actor.name}</p>
+              {actor.bio && (
+                <p className="text-xs text-ooo-muted mt-1 line-clamp-3">{actor.bio}</p>
+              )}
             </div>
           ))}
         </div>

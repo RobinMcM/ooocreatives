@@ -7,12 +7,20 @@ export async function getActors(showId: string): Promise<Actor[]> {
   return getActorsMetadata(showId);
 }
 
-export async function addActor(showId: string, name: string, photoUrl: string): Promise<Actor> {
+export async function addActor(
+  showId: string,
+  name: string,
+  photoUrl: string,
+  characterName?: string,
+  bio?: string
+): Promise<Actor> {
   const actors = await getActorsMetadata(showId);
   const newActor: Actor = {
     id: Date.now().toString(),
     name,
     photoUrl,
+    ...(characterName ? { characterName } : {}),
+    ...(bio ? { bio } : {}),
     createdAt: new Date().toISOString(),
   };
   await saveActorsMetadata(showId, [...actors, newActor]);
@@ -27,7 +35,7 @@ export async function getActor(showId: string, actorId: string): Promise<Actor |
 export async function updateActor(
   showId: string,
   actorId: string,
-  updates: Partial<Pick<Actor, "name" | "photoUrl">>
+  updates: Partial<Pick<Actor, "name" | "photoUrl" | "characterName" | "bio">>
 ): Promise<Actor | null> {
   const actors = await getActorsMetadata(showId);
   const idx = actors.findIndex((a) => a.id === actorId);

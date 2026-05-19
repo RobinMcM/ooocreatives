@@ -18,8 +18,13 @@ export async function PUT(
   const name = formData.get("name") as string | null;
   const file = formData.get("photo") as File | null;
 
-  const updates: Partial<{ name: string; photoUrl: string }> = {};
+  const characterName = formData.get("characterName") as string | null;
+  const bio = formData.get("bio") as string | null;
+
+  const updates: Partial<{ name: string; photoUrl: string; characterName: string; bio: string }> = {};
   if (name) updates.name = name;
+  if (characterName !== null) updates.characterName = characterName || "";
+  if (bio !== null) updates.bio = bio || "";
   if (file && file.size > 0) {
     const buffer = await file.arrayBuffer();
     updates.photoUrl = await uploadActorPhoto(showId, Buffer.from(buffer), file.name, file.type);

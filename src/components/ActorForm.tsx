@@ -15,6 +15,8 @@ export function ActorForm({ showId, actor }: { showId: string; actor?: Actor }) 
   const isEditing = !!actor;
 
   const [name, setName] = useState(actor?.name ?? "");
+  const [characterName, setCharacterName] = useState(actor?.characterName ?? "");
+  const [bio, setBio] = useState(actor?.bio ?? "");
   const [photo, setPhoto] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,6 +31,8 @@ export function ActorForm({ showId, actor }: { showId: string; actor?: Actor }) 
     try {
       const fd = new FormData();
       fd.append("name", name);
+      fd.append("characterName", characterName);
+      fd.append("bio", bio);
       if (photo) fd.append("photo", photo);
 
       const url = isEditing
@@ -67,7 +71,20 @@ export function ActorForm({ showId, actor }: { showId: string; actor?: Actor }) 
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-ooo-muted text-sm font-medium mb-2">Name</label>
+          <label className="block text-ooo-muted text-sm font-medium mb-2">
+            Character Name <span className="text-ooo-muted/50 font-normal">(optional)</span>
+          </label>
+          <input
+            type="text"
+            value={characterName}
+            onChange={(e) => setCharacterName(e.target.value)}
+            placeholder="e.g. Hamlet"
+            className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream placeholder-ooo-muted focus:outline-none focus:border-ooo-accent"
+          />
+        </div>
+
+        <div>
+          <label className="block text-ooo-muted text-sm font-medium mb-2">Actor Name</label>
           <input
             type="text"
             value={name}
@@ -75,6 +92,19 @@ export function ActorForm({ showId, actor }: { showId: string; actor?: Actor }) 
             placeholder="Actor name"
             className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream placeholder-ooo-muted focus:outline-none focus:border-ooo-accent"
             required
+          />
+        </div>
+
+        <div>
+          <label className="block text-ooo-muted text-sm font-medium mb-2">
+            Bio <span className="text-ooo-muted/50 font-normal">(optional)</span>
+          </label>
+          <textarea
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            placeholder="Short biography or role description…"
+            rows={4}
+            className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream placeholder-ooo-muted focus:outline-none focus:border-ooo-accent resize-none"
           />
         </div>
 

@@ -25,6 +25,8 @@ export async function POST(
   const formData = await request.formData();
   const name = formData.get("name") as string;
   const file = formData.get("photo") as File;
+  const characterName = (formData.get("characterName") as string) || undefined;
+  const bio = (formData.get("bio") as string) || undefined;
 
   if (!name || !file) {
     return NextResponse.json({ error: "Name and photo are required" }, { status: 400 });
@@ -32,7 +34,7 @@ export async function POST(
 
   const buffer = await file.arrayBuffer();
   const photoUrl = await uploadActorPhoto(id, Buffer.from(buffer), file.name, file.type);
-  const actor = await addActor(id, name, photoUrl);
+  const actor = await addActor(id, name, photoUrl, characterName, bio);
 
   return NextResponse.json(actor, { status: 201 });
 }

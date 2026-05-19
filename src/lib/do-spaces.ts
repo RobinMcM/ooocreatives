@@ -152,6 +152,8 @@ export async function uploadLessonPhoto(
 export interface Actor {
   id: string;
   name: string;
+  characterName?: string;
+  bio?: string;
   photoUrl: string;
   createdAt: string;
 }
