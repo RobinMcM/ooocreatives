@@ -331,9 +331,8 @@ export default function Courses() {
 
   const [cards, setCards] = useState<CourseCard[]>([]);
   const [templates, setTemplates] = useState<CourseTemplate[]>([]);
-  const [mode, setMode] = useState<"idle" | "create" | "add" | "editSchedule" | "editCourse">("idle");
+  const [mode, setMode] = useState<"idle" | "create" | "add" | "editSchedule">("idle");
   const [editingCard, setEditingCard] = useState<CourseCard | null>(null);
-  const [editingTemplate, setEditingTemplate] = useState<CourseTemplate | null>(null);
 
   useEffect(() => {
     fetch("/api/training").then((r) => r.json()).then(setCards).catch(() => {});
@@ -346,12 +345,7 @@ export default function Courses() {
       if (idx >= 0) { const next = [...prev]; next[idx] = t; return next; }
       return [...prev, t];
     });
-    // If editing a template, update all cards that use it
-    if (editingTemplate) {
-      setCards((prev) => prev.map((c) => c.courseId === t.id ? { ...c, ...t, id: c.id, courseId: c.courseId } : c));
-    }
     setMode("idle");
-    setEditingTemplate(null);
   };
 
   const handleCardSaved = (card: CourseCard) => {
@@ -370,7 +364,7 @@ export default function Courses() {
     if (res.ok) setCards((prev) => prev.filter((c) => c.id !== id));
   };
 
-  const cancel = () => { setMode("idle"); setEditingCard(null); setEditingTemplate(null); };
+  const cancel = () => { setMode("idle"); setEditingCard(null); };
 
   const showButtons = isLoggedIn && mode === "idle";
 
@@ -404,9 +398,6 @@ export default function Courses() {
       {mode === "create" && (
         <CreateCourseForm onSave={handleTemplateSaved} onCancel={cancel} />
       )}
-      {mode === "editCourse" && editingTemplate && (
-        <CreateCourseForm template={editingTemplate} onSave={handleTemplateSaved} onCancel={cancel} />
-      )}
       {mode === "add" && (
         <AddCourseForm templates={templates} onSave={handleCardSaved} onCancel={cancel} />
       )}
@@ -428,6 +419,30 @@ export default function Courses() {
             <div className="md:flex">
               <div className="relative aspect-square md:w-56 md:shrink-0 bg-ooo-black">
                 <Image src={card.photoUrl} alt={card.title} fill className="object-cover" />
+                {isLoggedIn && (
+                  <div className="absolute top-2 right-2 flex gap-1">
+                    <button
+                      type="button"
+                      onClick={() => { setEditingCard(card); setMode("editSchedule"); }}
+                      className="p-2 rounded-lg bg-ooo-black/70 hover:bg-ooo-accent text-ooo-cream transition-colors"
+                      aria-label="Edit schedule"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 11l6.586-6.586a2 2 0 112.828 2.828L11.828 13.828A2 2 0 0110 14.414l-3.414.586.586-3.414A2 2 0 018.172 9.828L9 11z" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteCard(card.id)}
+                      className="p-2 rounded-lg bg-ooo-black/70 hover:bg-red-700 text-ooo-cream transition-colors"
+                      aria-label="Delete course"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4h6v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
               </div>
               <div className="p-6 flex flex-col justify-between flex-1">
                 <div>
@@ -453,31 +468,6 @@ export default function Courses() {
                     dangerouslySetInnerHTML={{ __html: card.description }}
                   />
                 </div>
-                {isLoggedIn && (
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    <button
-                      onClick={() => { setEditingCard(card); setMode("editSchedule"); }}
-                      className="px-4 py-2 bg-ooo-ink text-ooo-cream rounded font-semibold hover:bg-ooo-ink/80 transition-colors text-sm"
-                    >
-                      Edit Schedule
-                    </button>
-                    <button
-                      onClick={() => {
-                        const t = templates.find((x) => x.id === card.courseId);
-                        if (t) { setEditingTemplate(t); setMode("editCourse"); }
-                      }}
-                      className="px-4 py-2 bg-ooo-ink text-ooo-cream rounded font-semibold hover:bg-ooo-ink/80 transition-colors text-sm"
-                    >
-                      Edit Course
-                    </button>
-                    <button
-                      onClick={() => handleDeleteCard(card.id)}
-                      className="px-4 py-2 bg-red-900/30 text-red-300 rounded font-semibold hover:bg-red-900/50 transition-colors text-sm"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
           </div>
