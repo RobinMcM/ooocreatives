@@ -30,10 +30,13 @@ export async function PUT(
   const title = formData.get("title") as string | null;
   const file = formData.get("photo") as File | null;
 
-  const updates: Partial<{ name: string; bio: string; title: string; photoUrl: string }> = {};
+  const bioUrl = formData.get("bioUrl") as string | null;
+
+  const updates: Partial<{ name: string; bio: string; title: string; bioUrl: string; photoUrl: string }> = {};
   if (name) updates.name = name;
   if (bio !== null) updates.bio = bio || "";
   if (title !== null) updates.title = title || "";
+  if (bioUrl !== null) updates.bioUrl = bioUrl || "";
   if (file && file.size > 0) {
     const buffer = await file.arrayBuffer();
     updates.photoUrl = await uploadGlobalActorPhoto(Buffer.from(buffer), file.name, file.type);

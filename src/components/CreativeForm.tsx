@@ -17,6 +17,7 @@ export function CreativeForm({ actor }: { actor?: GlobalActor }) {
   const [name, setName] = useState(actor?.name ?? "");
   const [title, setTitle] = useState(actor?.title ?? "");
   const [bio, setBio] = useState(actor?.bio ?? "");
+  const [bioUrl, setBioUrl] = useState(actor?.bioUrl ?? "");
   const [photo, setPhoto] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,6 +34,7 @@ export function CreativeForm({ actor }: { actor?: GlobalActor }) {
       fd.append("name", name);
       fd.append("title", title);
       fd.append("bio", bio);
+      fd.append("bioUrl", bioUrl);
       if (photo) fd.append("photo", photo);
 
       const url = isEditing ? `/api/creatives/${actor.id}` : "/api/creatives";
@@ -102,6 +104,19 @@ export function CreativeForm({ actor }: { actor?: GlobalActor }) {
             placeholder="Short biography…"
             rows={4}
             className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream placeholder-ooo-muted focus:outline-none focus:border-ooo-accent resize-none"
+          />
+        </div>
+
+        <div>
+          <label className="block text-ooo-muted text-sm font-medium mb-2">
+            Bio Link <span className="text-ooo-muted/50 font-normal">(optional — opens when photo is clicked)</span>
+          </label>
+          <input
+            type="url"
+            value={bioUrl}
+            onChange={(e) => setBioUrl(e.target.value)}
+            placeholder="https://…"
+            className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream placeholder-ooo-muted focus:outline-none focus:border-ooo-accent"
           />
         </div>
 

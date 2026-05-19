@@ -18,6 +18,7 @@ interface Creative {
   name: string;
   title?: string;
   bio?: string;
+  bioUrl?: string;
   photoUrl: string;
 }
 
@@ -85,7 +86,13 @@ export default function CreativesPage() {
             <div key={creative.id} className="relative group">
               {creative.title && <p className="text-xs font-medium text-ooo-accent uppercase tracking-wide mb-1">{creative.title}</p>}
               <div className="relative aspect-square rounded-lg overflow-hidden bg-ooo-slate mb-2">
-                <Image src={creative.photoUrl} alt={creative.name} fill className="object-cover" />
+                {creative.bioUrl ? (
+                  <a href={creative.bioUrl} target="_blank" rel="noopener noreferrer" className="absolute inset-0" aria-label={`${creative.name} bio`}>
+                    <Image src={creative.photoUrl} alt={creative.name} fill className="object-cover hover:opacity-80 transition-opacity" />
+                  </a>
+                ) : (
+                  <Image src={creative.photoUrl} alt={creative.name} fill className="object-cover" />
+                )}
                 {isAdmin && (
                   <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Link

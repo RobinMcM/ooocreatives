@@ -154,6 +154,7 @@ export interface GlobalActor {
   name: string;
   title?: string;
   bio?: string;
+  bioUrl?: string;
   photoUrl: string;
   createdAt: string;
 }
