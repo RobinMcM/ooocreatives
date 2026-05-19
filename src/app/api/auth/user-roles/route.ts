@@ -8,6 +8,12 @@ export async function GET() {
     return NextResponse.json({ roles: [] });
   }
 
-  const role = await getUserRole(session.userId);
-  return NextResponse.json({ roles: role ? [role] : [] });
+  try {
+    const role = await getUserRole(session.userId);
+    console.log("[user-roles] userId:", session.userId, "role:", role);
+    return NextResponse.json({ roles: role ? [role] : [] });
+  } catch (err) {
+    console.error("[user-roles] DB error:", err);
+    return NextResponse.json({ roles: [] });
+  }
 }

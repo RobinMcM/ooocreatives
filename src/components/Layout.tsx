@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useSessionContext } from "supertokens-auth-react/recipe/session";
 import Session from "supertokens-auth-react/recipe/session";
 import { useUserRoles } from "@/lib/useUserRoles";
@@ -20,9 +20,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const sessionExists = !sessionContext.loading && sessionContext.doesSessionExist;
   const authLoading = sessionContext.loading;
   const { roles } = useUserRoles();
-  const isAdmin = roles.some((r) => ["admin", "super user", "Admin", "Super User"].includes(r));
+  const isAdmin = roles.some((r) => ["admin", "super_user", "super user", "Admin", "Super User"].includes(r));
   const pathname = usePathname();
-  const router = useRouter();
   const authMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

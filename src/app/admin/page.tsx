@@ -26,7 +26,7 @@ const adminSections = [
   },
 ];
 
-const ADMIN_ROLES = ["admin", "super user", "Admin", "Super User"];
+const ADMIN_ROLES = ["admin", "super_user", "super user", "Admin", "Super User"];
 
 export default function Admin() {
   const { roles, loading } = useUserRoles();
