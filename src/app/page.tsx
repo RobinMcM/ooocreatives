@@ -3,6 +3,7 @@ import { ShowsCarousel } from "@/components/ShowsCarousel";
 export default function Home() {
   return (
     <div>
+      <ShowsCarousel />
       <section className="relative py-12 md:py-24 px-4 overflow-hidden">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="font-display text-4xl md:text-6xl font-bold text-ooo-cream mb-6">
@@ -17,7 +18,6 @@ export default function Home() {
           </p>
         </div>
       </section>
-      <ShowsCarousel />
       <section className="border-t border-ooo-slate py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="font-display text-2xl text-ooo-cream mb-4">

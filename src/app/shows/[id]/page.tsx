@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getShow } from "@/lib/shows-db";
 import { CharacterSection } from "@/components/CharacterSection";
@@ -18,27 +17,22 @@ export default async function ShowPage({
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      <Link
-        href="/"
-        className="inline-block text-sm text-ooo-muted hover:text-ooo-cream transition-colors mb-8"
-      >
-        ← Back to home
-      </Link>
+    <div className="max-w-4xl mx-auto px-4 pb-12">
+      <div className="flex flex-wrap items-baseline justify-center gap-x-4 gap-y-1 mb-6">
+        <h1 className="font-display text-4xl md:text-5xl font-bold text-ooo-cream text-center">
+          {show.title}
+        </h1>
 
-      <h1 className="font-display text-4xl md:text-5xl font-bold text-ooo-cream text-center mb-3">
-        {show.title}
-      </h1>
-
-      {show.startDate && show.endDate && (
-        <p className="text-center text-ooo-muted mb-6">
-          {new Date(show.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
-          {" – "}
-          {new Date(show.endDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
-          {" · "}
-          {Math.max(1, Math.round((new Date(show.endDate).getTime() - new Date(show.startDate).getTime()) / 86400000) + 1)} days
-        </p>
-      )}
+        {show.startDate && show.endDate && (
+          <p className="text-ooo-muted">
+            {new Date(show.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+            {" – "}
+            {new Date(show.endDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+            {" · "}
+            {Math.max(1, Math.round((new Date(show.endDate).getTime() - new Date(show.startDate).getTime()) / 86400000) + 1)} days
+          </p>
+        )}
+      </div>
 
       {show.linkUrl && (
         <div className="flex justify-center mb-6">
