@@ -100,7 +100,7 @@ export function CourseForm({ course }: { course?: CourseTemplate }) {
         throw new Error(response.status === 401 ? "Unauthorized" : (body.error ?? "Failed to save course"));
       }
 
-      router.push("/courses");
+      router.push("/schedule/courses");
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
       setSaving(false);
@@ -194,7 +194,7 @@ export function CourseForm({ course }: { course?: CourseTemplate }) {
           </button>
           <button
             type="button"
-            onClick={() => router.push("/courses")}
+            onClick={() => router.push("/schedule/courses")}
             className="px-6 py-2 bg-ooo-ink text-ooo-cream rounded-lg font-semibold hover:bg-ooo-ink/80 transition-colors"
           >
             Cancel

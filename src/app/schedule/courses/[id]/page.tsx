@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getCourseTemplate } from "@/lib/course-templates-db";
-import { CourseDatesSection } from "@/components/CourseDatesSection";
 
 export default async function CoursePage({
   params,
@@ -44,8 +43,6 @@ export default async function CoursePage({
           dangerouslySetInnerHTML={{ __html: course.description }}
         />
       )}
-
-      <CourseDatesSection courseId={id} />
     </div>
   );
 }

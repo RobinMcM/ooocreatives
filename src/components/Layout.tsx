@@ -12,7 +12,7 @@ const navLinks = [
   { href: "/", label: "Home" },
   { href: "/shows", label: "Our Shows" },
   { href: "/creatives", label: "Creatives" },
-  { href: "/courses", label: "Courses" },
+  { href: "/schedule", label: "Schedule" },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {

@@ -23,7 +23,6 @@ interface Course {
   locationUrl?: string;
 }
 
-
 export default function Courses() {
   const { roles, loading: rolesLoading } = useUserRoles();
   const isAdmin = !rolesLoading && roles.some((r) => ADMIN_ROLES.includes(r));
@@ -56,7 +55,7 @@ export default function Courses() {
         <h1 className="font-display text-4xl font-bold text-ooo-cream">Courses</h1>
         {isAdmin && (
           <Link
-            href="/courses/new"
+            href="/schedule/courses/new"
             className="px-4 py-2 bg-ooo-accent text-ooo-black rounded-lg text-sm font-semibold hover:bg-ooo-accent/80 transition-colors shrink-0"
           >
             + New Course
@@ -83,7 +82,7 @@ export default function Courses() {
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {courses.map((course) => (
             <div key={course.id} className="relative bg-ooo-slate border border-ooo-ink rounded-lg overflow-hidden group hover:border-ooo-accent/50 transition-colors">
-              <Link href={`/courses/${course.id}`} className="block">
+              <Link href={`/schedule/courses/${course.id}`} className="block">
                 <div className="relative aspect-[16/9] bg-ooo-black">
                   <Image
                     src={course.photoUrl}
@@ -108,7 +107,7 @@ export default function Courses() {
               {isAdmin && (
                 <div className="absolute top-2 right-2 flex gap-1">
                   <Link
-                    href={`/courses/${course.id}/edit`}
+                    href={`/schedule/courses/${course.id}/edit`}
                     onClick={(e) => e.stopPropagation()}
                     className="p-2 rounded-lg bg-ooo-black/70 hover:bg-ooo-accent text-ooo-cream transition-colors"
                     aria-label="Edit course"
