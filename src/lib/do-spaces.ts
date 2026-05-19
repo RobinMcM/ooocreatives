@@ -101,6 +101,11 @@ export interface Lesson {
   title: string;
   photoUrl: string;
   description: string;
+  date?: string;
+  time?: string;
+  durationMinutes?: number;
+  location?: string;
+  locationUrl?: string;
   createdAt: string;
   updatedAt: string;
 }

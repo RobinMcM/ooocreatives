@@ -10,6 +10,11 @@ interface Lesson {
   title: string;
   photoUrl: string;
   description: string;
+  date?: string;
+  time?: string;
+  durationMinutes?: number;
+  location?: string;
+  locationUrl?: string;
 }
 
 async function authHeaders(): Promise<HeadersInit> {
@@ -88,6 +93,11 @@ function LessonForm({
   const [title, setTitle] = useState(lesson?.title ?? "");
   const [photo, setPhoto] = useState<File | null>(null);
   const [description, setDescription] = useState(lesson?.description ?? "");
+  const [date, setDate] = useState(lesson?.date ?? "");
+  const [time, setTime] = useState(lesson?.time ?? "");
+  const [durationMinutes, setDurationMinutes] = useState(lesson?.durationMinutes?.toString() ?? "");
+  const [location, setLocation] = useState(lesson?.location ?? "");
+  const [locationUrl, setLocationUrl] = useState(lesson?.locationUrl ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -102,6 +112,11 @@ function LessonForm({
       const form = new FormData();
       form.append("title", title);
       form.append("description", description);
+      form.append("date", date);
+      form.append("time", time);
+      form.append("durationMinutes", durationMinutes);
+      form.append("location", location);
+      form.append("locationUrl", locationUrl);
       if (photo) form.append("photo", photo);
 
       const url = lesson ? `/api/training/${lesson.id}` : "/api/training";
@@ -136,6 +151,61 @@ function LessonForm({
           className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream placeholder-ooo-muted focus:outline-none focus:border-ooo-accent"
           required
         />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+        <div>
+          <label className="block text-ooo-muted text-sm font-medium mb-2">Date <span className="text-ooo-muted/50 font-normal">(optional)</span></label>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream focus:outline-none focus:border-ooo-accent"
+          />
+        </div>
+        <div>
+          <label className="block text-ooo-muted text-sm font-medium mb-2">Time <span className="text-ooo-muted/50 font-normal">(optional)</span></label>
+          <input
+            type="time"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream focus:outline-none focus:border-ooo-accent"
+          />
+        </div>
+        <div>
+          <label className="block text-ooo-muted text-sm font-medium mb-2">Duration <span className="text-ooo-muted/50 font-normal">(minutes)</span></label>
+          <input
+            type="number"
+            min="1"
+            value={durationMinutes}
+            onChange={(e) => setDurationMinutes(e.target.value)}
+            placeholder="e.g. 90"
+            className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream placeholder-ooo-muted focus:outline-none focus:border-ooo-accent"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label className="block text-ooo-muted text-sm font-medium mb-2">Location <span className="text-ooo-muted/50 font-normal">(optional)</span></label>
+          <input
+            type="text"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="e.g. The Studio, London"
+            className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream placeholder-ooo-muted focus:outline-none focus:border-ooo-accent"
+          />
+        </div>
+        <div>
+          <label className="block text-ooo-muted text-sm font-medium mb-2">Location URL <span className="text-ooo-muted/50 font-normal">(optional)</span></label>
+          <input
+            type="url"
+            value={locationUrl}
+            onChange={(e) => setLocationUrl(e.target.value)}
+            placeholder="https://maps.google.com/…"
+            className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream placeholder-ooo-muted focus:outline-none focus:border-ooo-accent"
+          />
+        </div>
       </div>
 
       <div className="mb-4">
@@ -252,7 +322,27 @@ export default function Courses() {
               </div>
               <div className="p-6 flex flex-col justify-between flex-1">
                 <div>
-                  <h2 className="font-display text-2xl font-bold text-ooo-cream mb-3">{lesson.title}</h2>
+                  <h2 className="font-display text-2xl font-bold text-ooo-cream mb-2">{lesson.title}</h2>
+                  {(lesson.date || lesson.time || lesson.durationMinutes) && (
+                    <p className="text-sm text-ooo-accent mb-1 flex flex-wrap gap-x-3 gap-y-1">
+                      {lesson.date && (
+                        <span>{new Date(lesson.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</span>
+                      )}
+                      {lesson.time && <span>{lesson.time}</span>}
+                      {lesson.durationMinutes && <span>{lesson.durationMinutes} mins</span>}
+                    </p>
+                  )}
+                  {lesson.location && (
+                    <p className="text-sm text-ooo-muted mb-3">
+                      {lesson.locationUrl ? (
+                        <a href={lesson.locationUrl} target="_blank" rel="noopener noreferrer" className="hover:text-ooo-cream transition-colors underline underline-offset-2">
+                          {lesson.location}
+                        </a>
+                      ) : (
+                        lesson.location
+                      )}
+                    </p>
+                  )}
                   <div
                     className="text-ooo-muted text-sm leading-relaxed [&_h2]:text-ooo-cream [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:mb-1 [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_strong]:text-ooo-cream [&_em]:italic"
                     dangerouslySetInnerHTML={{ __html: lesson.description }}

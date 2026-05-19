@@ -16,6 +16,12 @@ export async function POST(request: NextRequest) {
   const title = formData.get("title") as string;
   const file = formData.get("photo") as File;
   const description = (formData.get("description") as string) ?? "";
+  const date = (formData.get("date") as string) || undefined;
+  const time = (formData.get("time") as string) || undefined;
+  const durationRaw = formData.get("durationMinutes") as string | null;
+  const durationMinutes = durationRaw ? parseInt(durationRaw, 10) : undefined;
+  const location = (formData.get("location") as string) || undefined;
+  const locationUrl = (formData.get("locationUrl") as string) || undefined;
 
   if (!title || !file) {
     return NextResponse.json({ error: "Title and photo are required" }, { status: 400 });
@@ -23,7 +29,7 @@ export async function POST(request: NextRequest) {
 
   const buffer = await file.arrayBuffer();
   const photoUrl = await uploadLessonPhoto(Buffer.from(buffer), file.name, file.type);
-  const lesson = await createLesson(title, photoUrl, description);
+  const lesson = await createLesson(title, photoUrl, description, date, time, durationMinutes, location, locationUrl);
 
   return NextResponse.json(lesson, { status: 201 });
 }
