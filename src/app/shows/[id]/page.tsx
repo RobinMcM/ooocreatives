@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCarouselItem } from "@/lib/carousel-db";
+import { getShow } from "@/lib/shows-db";
 import { ActorSection } from "./ActorSection";
 
 export default async function ShowPage({
@@ -10,7 +10,7 @@ export default async function ShowPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const show = await getCarouselItem(id);
+  const show = await getShow(id);
 
   if (!show) {
     notFound();

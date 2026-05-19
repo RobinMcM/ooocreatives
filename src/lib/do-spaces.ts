@@ -12,7 +12,7 @@ const spacesClient = new S3Client({
 const SPACES_NAME = process.env.DO_SPACES_NAME || "";
 const SPACES_ENDPOINT = process.env.DO_SPACES_ENDPOINT || "nyc3.digitaloceanspaces.com";
 
-export async function uploadCarouselImage(
+export async function uploadShowImage(
   file: Buffer,
   filename: string,
   mimeType: string
@@ -37,7 +37,7 @@ export async function uploadCarouselImage(
   }
 }
 
-export async function deleteCarouselImage(imageUrl: string): Promise<void> {
+export async function deleteShowImage(imageUrl: string): Promise<void> {
   try {
     const url = new URL(imageUrl);
     const key = url.pathname.substring(1); // Remove leading slash
@@ -56,7 +56,7 @@ export async function deleteCarouselImage(imageUrl: string): Promise<void> {
 
 const METADATA_KEY = "carousel/metadata.json";
 
-export interface CarouselItem {
+export interface ShowItem {
   id: string;
   title: string;
   imageUrl: string;
@@ -67,7 +67,7 @@ export interface CarouselItem {
   updatedAt: string;
 }
 
-export async function getCarouselMetadata(): Promise<CarouselItem[]> {
+export async function getShowsMetadata(): Promise<ShowItem[]> {
   try {
     const response = await spacesClient.send(
       new GetObjectCommand({ Bucket: SPACES_NAME, Key: METADATA_KEY })
@@ -80,7 +80,7 @@ export async function getCarouselMetadata(): Promise<CarouselItem[]> {
   }
 }
 
-export async function saveCarouselMetadata(items: CarouselItem[]): Promise<void> {
+export async function saveShowsMetadata(items: ShowItem[]): Promise<void> {
   await spacesClient.send(
     new PutObjectCommand({
       Bucket: SPACES_NAME,

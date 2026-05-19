@@ -6,25 +6,25 @@ import Link from "next/link";
 
 const AUTOPLAY_MS = 5500;
 
-interface CarouselItem {
+interface ShowItem {
   id: string;
   title: string;
   imageUrl: string;
   order: number;
 }
 
-export function Carousel() {
+export function ShowsCarousel() {
   const [current, setCurrent] = useState(0);
-  const [slides, setSlides] = useState<CarouselItem[]>([]);
+  const [slides, setSlides] = useState<ShowItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCarouselItems = async () => {
+    const fetchShows = async () => {
       try {
-        const response = await fetch("/api/carousel");
+        const response = await fetch("/api/shows");
         if (response.ok) {
           const items = await response.json();
-          setSlides(items.sort((a: CarouselItem, b: CarouselItem) => a.order - b.order));
+          setSlides(items.sort((a: ShowItem, b: ShowItem) => a.order - b.order));
         }
       } catch {
         // leave empty
@@ -32,12 +32,12 @@ export function Carousel() {
         setIsLoading(false);
       }
     };
-    fetchCarouselItems();
+    fetchShows();
   }, []);
 
   useEffect(() => {
     if (isLoading || slides.length === 0) return;
-    
+
     const t = setInterval(() => {
       setCurrent((c) => (c + 1) % slides.length);
     }, AUTOPLAY_MS);

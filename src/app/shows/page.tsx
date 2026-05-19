@@ -1,9 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getCarouselItems } from "@/lib/carousel-db";
+import { getShows } from "@/lib/shows-db";
 
 export default async function OurShows() {
-  const shows = await getCarouselItems();
+  const shows = await getShows();
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
