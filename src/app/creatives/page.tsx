@@ -83,6 +83,7 @@ export default function CreativesPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {creatives.map((creative) => (
             <div key={creative.id} className="relative group">
+              {creative.title && <p className="text-xs font-medium text-ooo-accent uppercase tracking-wide mb-1">{creative.title}</p>}
               <div className="relative aspect-square rounded-lg overflow-hidden bg-ooo-slate mb-2">
                 <Image src={creative.photoUrl} alt={creative.name} fill className="object-cover" />
                 {isAdmin && (
@@ -109,7 +110,6 @@ export default function CreativesPage() {
                   </div>
                 )}
               </div>
-              {creative.title && <p className="text-xs font-medium text-ooo-accent uppercase tracking-wide mb-0.5">{creative.title}</p>}
               <p className="text-sm font-medium text-ooo-cream">{creative.name}</p>
               {creative.bio && <p className="text-xs text-ooo-muted mt-1 line-clamp-3">{creative.bio}</p>}
             </div>
