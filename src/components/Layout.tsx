@@ -219,7 +219,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
         )}
       </header>
-      <main className="flex-1 pt-16 md:pt-[72px]">{children}</main>
+      <main className="flex-1">{children}</main>
     </div>
   );
 }
