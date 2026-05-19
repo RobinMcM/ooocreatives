@@ -15,6 +15,7 @@ export function CreativeForm({ actor }: { actor?: GlobalActor }) {
   const isEditing = !!actor;
 
   const [name, setName] = useState(actor?.name ?? "");
+  const [title, setTitle] = useState(actor?.title ?? "");
   const [bio, setBio] = useState(actor?.bio ?? "");
   const [photo, setPhoto] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
@@ -30,6 +31,7 @@ export function CreativeForm({ actor }: { actor?: GlobalActor }) {
     try {
       const fd = new FormData();
       fd.append("name", name);
+      fd.append("title", title);
       fd.append("bio", bio);
       if (photo) fd.append("photo", photo);
 
@@ -74,6 +76,19 @@ export function CreativeForm({ actor }: { actor?: GlobalActor }) {
             placeholder="Creative name"
             className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream placeholder-ooo-muted focus:outline-none focus:border-ooo-accent"
             required
+          />
+        </div>
+
+        <div>
+          <label className="block text-ooo-muted text-sm font-medium mb-2">
+            Title <span className="text-ooo-muted/50 font-normal">(optional — e.g. Actor, Director, Producer)</span>
+          </label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="e.g. Actor, Director, Producer"
+            className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream placeholder-ooo-muted focus:outline-none focus:border-ooo-accent"
           />
         </div>
 

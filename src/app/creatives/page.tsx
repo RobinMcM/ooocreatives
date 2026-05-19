@@ -16,6 +16,7 @@ async function authHeaders(): Promise<HeadersInit> {
 interface Creative {
   id: string;
   name: string;
+  title?: string;
   bio?: string;
   photoUrl: string;
 }
@@ -108,6 +109,7 @@ export default function CreativesPage() {
                   </div>
                 )}
               </div>
+              {creative.title && <p className="text-xs font-medium text-ooo-accent uppercase tracking-wide mb-0.5">{creative.title}</p>}
               <p className="text-sm font-medium text-ooo-cream">{creative.name}</p>
               {creative.bio && <p className="text-xs text-ooo-muted mt-1 line-clamp-3">{creative.bio}</p>}
             </div>

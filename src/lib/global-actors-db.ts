@@ -15,13 +15,15 @@ export async function getGlobalActor(actorId: string): Promise<GlobalActor | nul
 export async function createGlobalActor(
   name: string,
   photoUrl: string,
-  bio?: string
+  bio?: string,
+  title?: string
 ): Promise<GlobalActor> {
   const actors = await getGlobalActorsMetadata();
   const newActor: GlobalActor = {
     id: Date.now().toString(),
     name,
     photoUrl,
+    ...(title ? { title } : {}),
     ...(bio ? { bio } : {}),
     createdAt: new Date().toISOString(),
   };
@@ -31,7 +33,7 @@ export async function createGlobalActor(
 
 export async function updateGlobalActor(
   actorId: string,
-  updates: Partial<Pick<GlobalActor, "name" | "photoUrl" | "bio">>
+  updates: Partial<Pick<GlobalActor, "name" | "photoUrl" | "bio" | "title">>
 ): Promise<GlobalActor | null> {
   const actors = await getGlobalActorsMetadata();
   const idx = actors.findIndex((a) => a.id === actorId);

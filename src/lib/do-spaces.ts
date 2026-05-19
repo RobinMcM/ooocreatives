@@ -152,6 +152,7 @@ export async function uploadLessonPhoto(
 export interface GlobalActor {
   id: string;
   name: string;
+  title?: string;
   bio?: string;
   photoUrl: string;
   createdAt: string;

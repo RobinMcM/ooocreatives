@@ -22,6 +22,7 @@ export async function POST(request: NextRequest) {
     const name = formData.get("name") as string;
     const file = formData.get("photo") as File;
     const bio = (formData.get("bio") as string) || undefined;
+    const title = (formData.get("title") as string) || undefined;
 
     if (!name || !file) {
       return NextResponse.json({ error: "Name and photo are required" }, { status: 400 });
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     const buffer = await file.arrayBuffer();
     const photoUrl = await uploadGlobalActorPhoto(Buffer.from(buffer), file.name, file.type);
-    const creative = await createGlobalActor(name, photoUrl, bio);
+    const creative = await createGlobalActor(name, photoUrl, bio, title);
 
     return NextResponse.json(creative, { status: 201 });
   } catch (error) {
