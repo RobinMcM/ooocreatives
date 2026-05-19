@@ -199,6 +199,50 @@ export async function uploadGlobalActorPhoto(
   return `https://${SPACES_NAME}.${SPACES_ENDPOINT}/${key}`;
 }
 
+// ── Show sections: Crew / Team (per-show, generic) ───────────────────────────
+
+export interface SectionMember {
+  id: string;
+  roleName: string;
+  actorId?: string;
+  createdAt: string;
+}
+
+const ALLOWED_SECTIONS = ["crew", "team"] as const;
+type SectionKey = (typeof ALLOWED_SECTIONS)[number];
+
+function assertSection(section: string): asserts section is SectionKey {
+  if (!ALLOWED_SECTIONS.includes(section as SectionKey)) {
+    throw new Error(`Invalid section: ${section}`);
+  }
+}
+
+export async function getSectionMetadata(showId: string, section: string): Promise<SectionMember[]> {
+  assertSection(section);
+  try {
+    const response = await spacesClient.send(
+      new GetObjectCommand({ Bucket: SPACES_NAME, Key: `shows/${showId}/${section}.json` })
+    );
+    const body = await response.Body?.transformToString();
+    return body ? JSON.parse(body) : [];
+  } catch (error: any) {
+    if (error.name === "NoSuchKey") return [];
+    throw error;
+  }
+}
+
+export async function saveSectionMetadata(showId: string, section: string, members: SectionMember[]): Promise<void> {
+  assertSection(section);
+  await spacesClient.send(
+    new PutObjectCommand({
+      Bucket: SPACES_NAME,
+      Key: `shows/${showId}/${section}.json`,
+      Body: JSON.stringify(members, null, 2),
+      ContentType: "application/json",
+    })
+  );
+}
+
 // ── Characters (per-show) ─────────────────────────────────────────────────────
 
 export interface Character {

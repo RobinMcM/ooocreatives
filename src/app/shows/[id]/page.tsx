@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getShow } from "@/lib/shows-db";
 import { CharacterSection } from "@/components/CharacterSection";
+import { ShowSection } from "@/components/ShowSection";
 
 export default async function ShowPage({
   params,
@@ -63,6 +64,20 @@ export default async function ShowPage({
       </div>
 
       <CharacterSection showId={id} />
+      <ShowSection
+        showId={id}
+        section="crew"
+        title="Crew"
+        addLabel="+ Add Crew Member"
+        emptyLabel="No crew members added yet."
+      />
+      <ShowSection
+        showId={id}
+        section="team"
+        title="Team"
+        addLabel="+ Add Team Member"
+        emptyLabel="No team members added yet."
+      />
     </div>
   );
 }
