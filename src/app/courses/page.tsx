@@ -177,7 +177,7 @@ function LessonForm({
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 
-export default function ActorTraining() {
+export default function Courses() {
   const session = useSessionContext();
   const isLoggedIn = !session.loading && session.doesSessionExist;
 
@@ -212,7 +212,7 @@ export default function ActorTraining() {
     <div className="max-w-4xl mx-auto px-4 py-12">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="font-display text-4xl md:text-5xl font-bold text-ooo-cream">Actor Training</h1>
+          <h1 className="font-display text-4xl md:text-5xl font-bold text-ooo-cream">Courses</h1>
           <p className="text-ooo-muted mt-2">Courses and workshops to develop your craft.</p>
         </div>
         {isLoggedIn && !showForm && !editingLesson && (
@@ -220,7 +220,7 @@ export default function ActorTraining() {
             onClick={() => setShowForm(true)}
             className="px-4 py-2 bg-ooo-accent text-ooo-black rounded-lg text-sm font-semibold hover:bg-ooo-accent/80 transition-colors shrink-0"
           >
-            + Add Lesson
+            + Add Course
           </button>
         )}
       </div>
@@ -239,7 +239,7 @@ export default function ActorTraining() {
 
       {lessons.length === 0 && !showForm && (
         <div className="bg-ooo-slate border border-ooo-ink rounded-lg p-12 text-center">
-          <p className="text-ooo-muted">No lessons yet.</p>
+          <p className="text-ooo-muted">No courses yet.</p>
         </div>
       )}
 
