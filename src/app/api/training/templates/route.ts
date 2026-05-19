@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     const buffer = await file.arrayBuffer();
     const photoUrl = await uploadCourseTemplatePhoto(Buffer.from(buffer), file.name, file.type);
-    const template = await createCourseTemplate(title, photoUrl, description, location, locationUrl);
+    const template = await createCourseTemplate(title, photoUrl, description, undefined, location, locationUrl);
 
     return NextResponse.json(template, { status: 201 });
   } catch {
