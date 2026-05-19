@@ -31,6 +31,8 @@ export async function POST(request: NextRequest) {
     const linkUrl = (formData.get("linkUrl") as string) || undefined;
     const linkLabel = (formData.get("linkLabel") as string) || undefined;
     const featuredOnHomepage = formData.get("featuredOnHomepage") === "true";
+    const startDate = (formData.get("startDate") as string) || undefined;
+    const endDate = (formData.get("endDate") as string) || undefined;
 
     if (!title || !file) {
       return NextResponse.json(
@@ -41,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     const buffer = await file.arrayBuffer();
     const imageUrl = await uploadShowImage(Buffer.from(buffer), file.name, file.type);
-    const item = await createShow(title, imageUrl, featuredOnHomepage, linkUrl, linkLabel);
+    const item = await createShow(title, imageUrl, featuredOnHomepage, linkUrl, linkLabel, startDate, endDate);
 
     return NextResponse.json(item, { status: 201 });
   } catch (error) {

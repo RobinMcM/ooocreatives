@@ -25,9 +25,19 @@ export default async function ShowPage({
         ← Back to home
       </Link>
 
-      <h1 className="font-display text-4xl md:text-5xl font-bold text-ooo-cream text-center mb-6">
+      <h1 className="font-display text-4xl md:text-5xl font-bold text-ooo-cream text-center mb-3">
         {show.title}
       </h1>
+
+      {show.startDate && show.endDate && (
+        <p className="text-center text-ooo-muted mb-6">
+          {new Date(show.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+          {" – "}
+          {new Date(show.endDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+          {" · "}
+          {Math.max(1, Math.round((new Date(show.endDate).getTime() - new Date(show.startDate).getTime()) / 86400000) + 1)} days
+        </p>
+      )}
 
       {show.linkUrl && (
         <div className="flex justify-center mb-6">

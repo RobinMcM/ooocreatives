@@ -21,11 +21,44 @@ interface ShowItem {
   featuredOnHomepage?: boolean;
   linkUrl?: string;
   linkLabel?: string;
+  startDate?: string;
+  endDate?: string;
   createdAt: string;
   updatedAt: string;
 }
 
-const emptyForm = { title: "", image: null as File | null, linkUrl: "", linkLabel: "", featuredOnHomepage: true };
+function calcDays(start: string, end: string): number {
+  const ms = new Date(end).getTime() - new Date(start).getTime();
+  return Math.max(1, Math.round(ms / 86400000) + 1);
+}
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function ShowDates({ startDate, endDate }: { startDate?: string; endDate?: string }) {
+  if (!startDate && !endDate) return null;
+  const days = startDate && endDate ? calcDays(startDate, endDate) : null;
+  return (
+    <p className="text-xs text-ooo-muted mt-1">
+      {startDate && endDate
+        ? `Running ${formatDate(startDate)} – ${formatDate(endDate)} · ${days} day${days === 1 ? "" : "s"}`
+        : startDate
+        ? `From ${formatDate(startDate)}`
+        : `Until ${formatDate(endDate!)}`}
+    </p>
+  );
+}
+
+const emptyForm = {
+  title: "",
+  image: null as File | null,
+  linkUrl: "",
+  linkLabel: "",
+  featuredOnHomepage: true,
+  startDate: "",
+  endDate: "",
+};
 
 export default function OurShows() {
   const { roles, loading: rolesLoading } = useUserRoles();
@@ -67,6 +100,8 @@ export default function OurShows() {
       fd.append("linkUrl", formData.linkUrl);
       fd.append("linkLabel", formData.linkLabel);
       fd.append("featuredOnHomepage", String(formData.featuredOnHomepage));
+      fd.append("startDate", formData.startDate);
+      fd.append("endDate", formData.endDate);
 
       const url = editingId ? `/api/shows/${editingId}` : "/api/shows";
       const response = await fetch(url, {
@@ -105,7 +140,15 @@ export default function OurShows() {
 
   const handleEdit = (item: ShowItem) => {
     setEditingId(item.id);
-    setFormData({ title: item.title, image: null, linkUrl: item.linkUrl ?? "", linkLabel: item.linkLabel ?? "", featuredOnHomepage: item.featuredOnHomepage !== false });
+    setFormData({
+      title: item.title,
+      image: null,
+      linkUrl: item.linkUrl ?? "",
+      linkLabel: item.linkLabel ?? "",
+      featuredOnHomepage: item.featuredOnHomepage !== false,
+      startDate: item.startDate ?? "",
+      endDate: item.endDate ?? "",
+    });
     setIsAddingNew(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -116,6 +159,11 @@ export default function OurShows() {
     setFormData(emptyForm);
     setError(null);
   };
+
+  const previewDays =
+    formData.startDate && formData.endDate
+      ? calcDays(formData.startDate, formData.endDate)
+      : null;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
@@ -161,6 +209,38 @@ export default function OurShows() {
             </label>
             <p className="mt-1 ml-7 text-xs text-ooo-muted">Show this in the featured carousel on the homepage.</p>
           </div>
+
+          {/* Show dates */}
+          <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-ooo-muted text-sm font-medium mb-2">
+                Running From <span className="text-ooo-muted/50 font-normal">(optional)</span>
+              </label>
+              <input
+                type="date"
+                value={formData.startDate}
+                onChange={(e) => setFormData((p) => ({ ...p, startDate: e.target.value }))}
+                className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream focus:outline-none focus:border-ooo-accent"
+              />
+            </div>
+            <div>
+              <label className="block text-ooo-muted text-sm font-medium mb-2">
+                Running To <span className="text-ooo-muted/50 font-normal">(optional)</span>
+              </label>
+              <input
+                type="date"
+                value={formData.endDate}
+                min={formData.startDate || undefined}
+                onChange={(e) => setFormData((p) => ({ ...p, endDate: e.target.value }))}
+                className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream focus:outline-none focus:border-ooo-accent"
+              />
+            </div>
+          </div>
+          {previewDays !== null && (
+            <p className="text-xs text-ooo-accent mb-4 -mt-2">
+              {previewDays} day{previewDays === 1 ? "" : "s"}
+            </p>
+          )}
 
           <div className="mb-4">
             <label className="block text-ooo-muted text-sm font-medium mb-2">
@@ -249,6 +329,7 @@ export default function OurShows() {
                   <h2 className="font-display text-xl font-semibold text-ooo-cream group-hover:text-ooo-accent transition-colors">
                     {item.title}
                   </h2>
+                  <ShowDates startDate={item.startDate} endDate={item.endDate} />
                 </div>
               </Link>
 

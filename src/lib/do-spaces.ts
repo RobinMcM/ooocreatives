@@ -64,6 +64,8 @@ export interface ShowItem {
   featuredOnHomepage?: boolean;
   linkUrl?: string;
   linkLabel?: string;
+  startDate?: string;
+  endDate?: string;
   createdAt: string;
   updatedAt: string;
 }
