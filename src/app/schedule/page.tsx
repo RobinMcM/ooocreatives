@@ -169,16 +169,24 @@ export default function SchedulePage() {
     <div className="max-w-6xl mx-auto px-4 py-12">
       <div className="flex items-center justify-between mb-2">
         <h1 className="font-display text-4xl font-bold text-ooo-cream">Schedule</h1>
-        {isAdmin && !showForm && (
-          <button
-            onClick={() => setShowForm(true)}
-            disabled={templates.length === 0}
-            className="px-4 py-2 bg-ooo-accent text-ooo-black rounded-lg text-sm font-semibold hover:bg-ooo-accent/80 transition-colors shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
-            title={templates.length === 0 ? "Create a course first" : undefined}
+        <div className="flex items-center gap-3 shrink-0">
+          <Link
+            href="/schedule/courses"
+            className="px-4 py-2 bg-ooo-ink border border-ooo-slate text-ooo-cream rounded-lg text-sm font-semibold hover:bg-ooo-slate transition-colors"
           >
-            + Schedule Course
-          </button>
-        )}
+            Courses
+          </Link>
+          {isAdmin && !showForm && (
+            <button
+              onClick={() => setShowForm(true)}
+              disabled={templates.length === 0}
+              className="px-4 py-2 bg-ooo-accent text-ooo-black rounded-lg text-sm font-semibold hover:bg-ooo-accent/80 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              title={templates.length === 0 ? "Create a course first" : undefined}
+            >
+              + Schedule Course
+            </button>
+          )}
+        </div>
       </div>
       <p className="text-ooo-muted mb-8">Upcoming courses and workshops.</p>
 
