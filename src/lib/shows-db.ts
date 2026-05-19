@@ -16,6 +16,7 @@ export async function getShow(id: string): Promise<ShowItem | null> {
 export async function createShow(
   title: string,
   imageUrl: string,
+  featuredOnHomepage: boolean = true,
   linkUrl?: string,
   linkLabel?: string
 ): Promise<ShowItem> {
@@ -25,6 +26,7 @@ export async function createShow(
     title,
     imageUrl,
     order: items.length,
+    featuredOnHomepage,
     ...(linkUrl ? { linkUrl } : {}),
     ...(linkLabel ? { linkLabel } : {}),
     createdAt: new Date().toISOString(),
@@ -36,7 +38,7 @@ export async function createShow(
 
 export async function updateShow(
   id: string,
-  updates: Partial<Pick<ShowItem, "title" | "imageUrl" | "order" | "linkUrl" | "linkLabel">>
+  updates: Partial<Pick<ShowItem, "title" | "imageUrl" | "order" | "featuredOnHomepage" | "linkUrl" | "linkLabel">>
 ): Promise<ShowItem | null> {
   const items = await getShowsMetadata();
   const idx = items.findIndex((item) => item.id === id);

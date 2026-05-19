@@ -26,12 +26,14 @@ export async function PUT(
     const orderStr = formData.get("order") as string;
     const linkUrl = formData.get("linkUrl") as string | null;
     const linkLabel = formData.get("linkLabel") as string | null;
+    const featuredOnHomepageStr = formData.get("featuredOnHomepage") as string | null;
 
     const updates: any = {};
     if (title) updates.title = title;
     if (orderStr) updates.order = parseInt(orderStr);
     if (linkUrl !== null) updates.linkUrl = linkUrl || undefined;
     if (linkLabel !== null) updates.linkLabel = linkLabel || undefined;
+    if (featuredOnHomepageStr !== null) updates.featuredOnHomepage = featuredOnHomepageStr === "true";
 
     if (file && file.size > 0) {
       try {

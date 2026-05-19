@@ -61,6 +61,7 @@ export interface ShowItem {
   title: string;
   imageUrl: string;
   order: number;
+  featuredOnHomepage?: boolean;
   linkUrl?: string;
   linkLabel?: string;
   createdAt: string;

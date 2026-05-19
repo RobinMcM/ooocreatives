@@ -11,6 +11,7 @@ interface ShowItem {
   title: string;
   imageUrl: string;
   order: number;
+  featuredOnHomepage?: boolean;
 }
 
 export function ShowsCarousel() {
@@ -24,7 +25,11 @@ export function ShowsCarousel() {
         const response = await fetch("/api/shows");
         if (response.ok) {
           const items = await response.json();
-          setSlides(items.sort((a: ShowItem, b: ShowItem) => a.order - b.order));
+          setSlides(
+            items
+              .filter((item: ShowItem) => item.featuredOnHomepage !== false)
+              .sort((a: ShowItem, b: ShowItem) => a.order - b.order)
+          );
         }
       } catch {
         // leave empty

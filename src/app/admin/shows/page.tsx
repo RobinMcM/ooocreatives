@@ -29,7 +29,7 @@ export default function AdminShows() {
   const [error, setError] = useState<string | null>(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ title: "", image: null as File | null, linkUrl: "", linkLabel: "" });
+  const [formData, setFormData] = useState({ title: "", image: null as File | null, linkUrl: "", linkLabel: "", featuredOnHomepage: true });
 
   useEffect(() => {
     fetchItems();
@@ -89,6 +89,7 @@ export default function AdminShows() {
       }
       submitFormData.append("linkUrl", formData.linkUrl);
       submitFormData.append("linkLabel", formData.linkLabel);
+      submitFormData.append("featuredOnHomepage", String(formData.featuredOnHomepage));
 
       const url = editingId ? `/api/shows/${editingId}` : "/api/shows";
       const method = editingId ? "PUT" : "POST";
@@ -107,7 +108,7 @@ export default function AdminShows() {
         throw new Error(response.status === 401 ? "Unauthorized" : "Failed to save show");
       }
 
-      setFormData({ title: "", image: null, linkUrl: "", linkLabel: "" });
+      setFormData({ title: "", image: null, linkUrl: "", linkLabel: "", featuredOnHomepage: true });
       setIsAddingNew(false);
       setEditingId(null);
       await fetchItems();
@@ -137,14 +138,14 @@ export default function AdminShows() {
 
   const handleEdit = (item: ShowItem) => {
     setEditingId(item.id);
-    setFormData({ title: item.title, image: null, linkUrl: item.linkUrl ?? "", linkLabel: item.linkLabel ?? "" });
+    setFormData({ title: item.title, image: null, linkUrl: item.linkUrl ?? "", linkLabel: item.linkLabel ?? "", featuredOnHomepage: item.featuredOnHomepage !== false });
     setIsAddingNew(false);
   };
 
   const handleCancel = () => {
     setEditingId(null);
     setIsAddingNew(false);
-    setFormData({ title: "", image: null, linkUrl: "", linkLabel: "" });
+    setFormData({ title: "", image: null, linkUrl: "", linkLabel: "", featuredOnHomepage: true });
     setError(null);
   };
 
@@ -195,6 +196,19 @@ export default function AdminShows() {
               placeholder="Show title"
               required
             />
+          </div>
+
+          <div className="mb-4">
+            <label className="inline-flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.featuredOnHomepage}
+                onChange={(e) => setFormData((prev) => ({ ...prev, featuredOnHomepage: e.target.checked }))}
+                className="w-4 h-4 rounded border-ooo-ink accent-ooo-accent"
+              />
+              <span className="text-sm font-medium text-ooo-cream">Display on homepage</span>
+            </label>
+            <p className="mt-1 ml-7 text-xs text-ooo-muted">Show this in the featured carousel on the homepage.</p>
           </div>
 
           <div className="mb-4">
