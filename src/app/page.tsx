@@ -2,7 +2,7 @@ import { ShowsCarousel } from "@/components/ShowsCarousel";
 
 export default function Home() {
   return (
-    <div>
+    <div className="pt-4">
       <ShowsCarousel />
       <section className="relative py-12 md:py-24 px-4 overflow-hidden">
         <div className="max-w-4xl mx-auto text-center">
