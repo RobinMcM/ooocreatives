@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useSessionContext } from "supertokens-auth-react/recipe/session";
 import Session from "supertokens-auth-react/recipe/session";
 import { useUserRoles } from "@/lib/useUserRoles";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -91,6 +92,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </li>
               ))}
             </ul>
+            <ThemeToggle />
             <div className="relative" ref={authMenuRef}>
               {authLoading ? (
                 <div className="min-h-[44px] min-w-[44px] rounded animate-pulse bg-ooo-slate/50" />
