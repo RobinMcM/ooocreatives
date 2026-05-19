@@ -147,21 +147,20 @@ export async function uploadLessonPhoto(
   return `https://${SPACES_NAME}.${SPACES_ENDPOINT}/${key}`;
 }
 
-// ── Actors ────────────────────────────────────────────────────────────────────
+// ── Global Actors ─────────────────────────────────────────────────────────────
 
-export interface Actor {
+export interface GlobalActor {
   id: string;
   name: string;
-  characterName?: string;
   bio?: string;
   photoUrl: string;
   createdAt: string;
 }
 
-export async function getActorsMetadata(showId: string): Promise<Actor[]> {
+export async function getGlobalActorsMetadata(): Promise<GlobalActor[]> {
   try {
     const response = await spacesClient.send(
-      new GetObjectCommand({ Bucket: SPACES_NAME, Key: `shows/${showId}/actors.json` })
+      new GetObjectCommand({ Bucket: SPACES_NAME, Key: "actors/actors.json" })
     );
     const body = await response.Body?.transformToString();
     return body ? JSON.parse(body) : [];
@@ -171,24 +170,23 @@ export async function getActorsMetadata(showId: string): Promise<Actor[]> {
   }
 }
 
-export async function saveActorsMetadata(showId: string, actors: Actor[]): Promise<void> {
+export async function saveGlobalActorsMetadata(actors: GlobalActor[]): Promise<void> {
   await spacesClient.send(
     new PutObjectCommand({
       Bucket: SPACES_NAME,
-      Key: `shows/${showId}/actors.json`,
+      Key: "actors/actors.json",
       Body: JSON.stringify(actors, null, 2),
       ContentType: "application/json",
     })
   );
 }
 
-export async function uploadActorPhoto(
-  showId: string,
+export async function uploadGlobalActorPhoto(
   file: Buffer,
   filename: string,
   mimeType: string
 ): Promise<string> {
-  const key = `shows/${showId}/actors/${Date.now()}-${filename}`;
+  const key = `actors/${Date.now()}-${filename}`;
   await spacesClient.send(
     new PutObjectCommand({
       Bucket: SPACES_NAME,
@@ -199,4 +197,37 @@ export async function uploadActorPhoto(
     })
   );
   return `https://${SPACES_NAME}.${SPACES_ENDPOINT}/${key}`;
+}
+
+// ── Characters (per-show) ─────────────────────────────────────────────────────
+
+export interface Character {
+  id: string;
+  characterName: string;
+  actorId?: string;
+  createdAt: string;
+}
+
+export async function getCharactersMetadata(showId: string): Promise<Character[]> {
+  try {
+    const response = await spacesClient.send(
+      new GetObjectCommand({ Bucket: SPACES_NAME, Key: `shows/${showId}/characters.json` })
+    );
+    const body = await response.Body?.transformToString();
+    return body ? JSON.parse(body) : [];
+  } catch (error: any) {
+    if (error.name === "NoSuchKey") return [];
+    throw error;
+  }
+}
+
+export async function saveCharactersMetadata(showId: string, characters: Character[]): Promise<void> {
+  await spacesClient.send(
+    new PutObjectCommand({
+      Bucket: SPACES_NAME,
+      Key: `shows/${showId}/characters.json`,
+      Body: JSON.stringify(characters, null, 2),
+      ContentType: "application/json",
+    })
+  );
 }

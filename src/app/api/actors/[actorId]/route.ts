@@ -1,36 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionForValidation } from "@/lib/supertokens/server";
-import { getActor, updateActor, deleteActor } from "@/lib/actors-db";
-import { uploadActorPhoto } from "@/lib/do-spaces";
+import { getGlobalActor, updateGlobalActor, deleteGlobalActor } from "@/lib/global-actors-db";
+import { uploadGlobalActorPhoto } from "@/lib/do-spaces";
+
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ actorId: string }> }
+) {
+  const { actorId } = await params;
+  const actor = await getGlobalActor(actorId);
+  if (!actor) return NextResponse.json({ error: "Actor not found" }, { status: 404 });
+  return NextResponse.json(actor);
+}
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string; actorId: string }> }
+  { params }: { params: Promise<{ actorId: string }> }
 ) {
   const session = await getSessionForValidation();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id: showId, actorId } = await params;
-  const actor = await getActor(showId, actorId);
+  const { actorId } = await params;
+  const actor = await getGlobalActor(actorId);
   if (!actor) return NextResponse.json({ error: "Actor not found" }, { status: 404 });
 
   const formData = await request.formData();
   const name = formData.get("name") as string | null;
+  const bio = formData.get("bio") as string | null;
   const file = formData.get("photo") as File | null;
 
-  const characterName = formData.get("characterName") as string | null;
-  const bio = formData.get("bio") as string | null;
-
-  const updates: Partial<{ name: string; photoUrl: string; characterName: string; bio: string }> = {};
+  const updates: Partial<{ name: string; bio: string; photoUrl: string }> = {};
   if (name) updates.name = name;
-  if (characterName !== null) updates.characterName = characterName || "";
   if (bio !== null) updates.bio = bio || "";
   if (file && file.size > 0) {
     const buffer = await file.arrayBuffer();
-    updates.photoUrl = await uploadActorPhoto(showId, Buffer.from(buffer), file.name, file.type);
+    updates.photoUrl = await uploadGlobalActorPhoto(Buffer.from(buffer), file.name, file.type);
   }
 
-  const updated = await updateActor(showId, actorId, updates);
+  const updated = await updateGlobalActor(actorId, updates);
   if (!updated) return NextResponse.json({ error: "Failed to update actor" }, { status: 500 });
 
   return NextResponse.json(updated);
@@ -38,14 +45,13 @@ export async function PUT(
 
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: Promise<{ id: string; actorId: string }> }
+  { params }: { params: Promise<{ actorId: string }> }
 ) {
   const session = await getSessionForValidation();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id: showId, actorId } = await params;
-  const deleted = await deleteActor(showId, actorId);
-
+  const { actorId } = await params;
+  const deleted = await deleteGlobalActor(actorId);
   if (!deleted) return NextResponse.json({ error: "Actor not found" }, { status: 404 });
 
   return NextResponse.json({ success: true });

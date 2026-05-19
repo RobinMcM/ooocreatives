@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getShow } from "@/lib/shows-db";
-import { ActorSection } from "./ActorSection";
+import { CharacterSection } from "@/components/CharacterSection";
 
 export default async function ShowPage({
   params,
@@ -62,7 +62,7 @@ export default async function ShowPage({
         />
       </div>
 
-      <ActorSection showId={id} />
+      <CharacterSection showId={id} />
     </div>
   );
 }

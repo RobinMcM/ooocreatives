@@ -3,19 +3,18 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Session from "supertokens-auth-react/recipe/session";
-import type { Actor } from "@/lib/actors-db";
+import type { GlobalActor } from "@/lib/do-spaces";
 
 async function authHeaders(): Promise<HeadersInit> {
   const token = await Session.getAccessToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-export function ActorForm({ showId, actor }: { showId: string; actor?: Actor }) {
+export function ActorForm({ actor }: { actor?: GlobalActor }) {
   const router = useRouter();
   const isEditing = !!actor;
 
   const [name, setName] = useState(actor?.name ?? "");
-  const [characterName, setCharacterName] = useState(actor?.characterName ?? "");
   const [bio, setBio] = useState(actor?.bio ?? "");
   const [photo, setPhoto] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
@@ -31,14 +30,10 @@ export function ActorForm({ showId, actor }: { showId: string; actor?: Actor }) 
     try {
       const fd = new FormData();
       fd.append("name", name);
-      fd.append("characterName", characterName);
       fd.append("bio", bio);
       if (photo) fd.append("photo", photo);
 
-      const url = isEditing
-        ? `/api/shows/${showId}/actors/${actor.id}`
-        : `/api/shows/${showId}/actors`;
-
+      const url = isEditing ? `/api/actors/${actor.id}` : "/api/actors";
       const response = await fetch(url, {
         method: isEditing ? "PUT" : "POST",
         body: fd,
@@ -50,7 +45,7 @@ export function ActorForm({ showId, actor }: { showId: string; actor?: Actor }) 
         throw new Error(response.status === 401 ? "Unauthorized" : (body.error ?? "Failed to save actor"));
       }
 
-      router.push(`/shows/${showId}`);
+      router.push("/actors");
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
       setSaving(false);
@@ -71,20 +66,7 @@ export function ActorForm({ showId, actor }: { showId: string; actor?: Actor }) 
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-ooo-muted text-sm font-medium mb-2">
-            Character Name <span className="text-ooo-muted/50 font-normal">(optional)</span>
-          </label>
-          <input
-            type="text"
-            value={characterName}
-            onChange={(e) => setCharacterName(e.target.value)}
-            placeholder="e.g. Hamlet"
-            className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream placeholder-ooo-muted focus:outline-none focus:border-ooo-accent"
-          />
-        </div>
-
-        <div>
-          <label className="block text-ooo-muted text-sm font-medium mb-2">Actor Name</label>
+          <label className="block text-ooo-muted text-sm font-medium mb-2">Name</label>
           <input
             type="text"
             value={name}
@@ -102,7 +84,7 @@ export function ActorForm({ showId, actor }: { showId: string; actor?: Actor }) 
           <textarea
             value={bio}
             onChange={(e) => setBio(e.target.value)}
-            placeholder="Short biography or role description…"
+            placeholder="Short biography…"
             rows={4}
             className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream placeholder-ooo-muted focus:outline-none focus:border-ooo-accent resize-none"
           />
@@ -132,7 +114,7 @@ export function ActorForm({ showId, actor }: { showId: string; actor?: Actor }) 
           </button>
           <button
             type="button"
-            onClick={() => router.push(`/shows/${showId}`)}
+            onClick={() => router.push("/actors")}
             className="px-6 py-2 bg-ooo-ink text-ooo-cream rounded-lg font-semibold hover:bg-ooo-ink/80 transition-colors"
           >
             Cancel
