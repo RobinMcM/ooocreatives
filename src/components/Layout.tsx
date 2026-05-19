@@ -21,7 +21,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const sessionExists = !sessionContext.loading && sessionContext.doesSessionExist;
   const authLoading = sessionContext.loading;
   const { roles } = useUserRoles();
-  const isAdmin = roles.some((r) => ["admin", "super_user", "super user", "Admin", "Super User"].includes(r));
   const pathname = usePathname();
   const authMenuRef = useRef<HTMLDivElement>(null);
 
@@ -140,24 +139,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
                           </div>
                         )}
                       </div>
-                      {isAdmin && (
-                        <Link
-                          href="/admin"
-                          onClick={() => setAuthMenuOpen(false)}
-                          className="w-full inline-flex items-center gap-2 text-left px-4 py-3 text-sm text-ooo-muted hover:text-ooo-cream hover:bg-ooo-slate/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ooo-accent"
-                          role="menuitem"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5"
-                            />
-                          </svg>
-                          Admin
-                        </Link>
-                      )}
                       <button
                         type="button"
                         onClick={handleLogout}
@@ -237,7 +218,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
         )}
       </header>
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 pt-16 md:pt-[72px]">{children}</main>
     </div>
   );
 }
