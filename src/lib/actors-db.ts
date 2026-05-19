@@ -19,6 +19,24 @@ export async function addActor(showId: string, name: string, photoUrl: string): 
   return newActor;
 }
 
+export async function getActor(showId: string, actorId: string): Promise<Actor | null> {
+  const actors = await getActorsMetadata(showId);
+  return actors.find((a) => a.id === actorId) ?? null;
+}
+
+export async function updateActor(
+  showId: string,
+  actorId: string,
+  updates: Partial<Pick<Actor, "name" | "photoUrl">>
+): Promise<Actor | null> {
+  const actors = await getActorsMetadata(showId);
+  const idx = actors.findIndex((a) => a.id === actorId);
+  if (idx === -1) return null;
+  actors[idx] = { ...actors[idx], ...updates };
+  await saveActorsMetadata(showId, actors);
+  return actors[idx];
+}
+
 export async function deleteActor(showId: string, actorId: string): Promise<boolean> {
   const actors = await getActorsMetadata(showId);
   const filtered = actors.filter((a) => a.id !== actorId);
