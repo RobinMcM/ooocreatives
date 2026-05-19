@@ -1,35 +1,46 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionForValidation } from "@/lib/supertokens/server";
-import { getLessons, createLesson } from "@/lib/lessons-db";
-import { uploadLessonPhoto } from "@/lib/do-spaces";
+import { getCourseInstances, createCourseInstance } from "@/lib/course-instances-db";
+import { getCourseTemplates } from "@/lib/course-templates-db";
 
 export async function GET() {
-  const lessons = await getLessons();
-  return NextResponse.json(lessons);
+  try {
+    const [instances, templates] = await Promise.all([getCourseInstances(), getCourseTemplates()]);
+    const templateMap = new Map(templates.map((t) => [t.id, t]));
+    const merged = instances
+      .map((instance) => {
+        const template = templateMap.get(instance.courseId);
+        if (!template) return null;
+        return { ...instance, ...template, id: instance.id, courseId: instance.courseId };
+      })
+      .filter(Boolean);
+    return NextResponse.json(merged);
+  } catch {
+    return NextResponse.json({ error: "Failed to fetch courses" }, { status: 500 });
+  }
 }
 
 export async function POST(request: NextRequest) {
   const session = await getSessionForValidation();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const formData = await request.formData();
-  const title = formData.get("title") as string;
-  const file = formData.get("photo") as File;
-  const description = (formData.get("description") as string) ?? "";
-  const date = (formData.get("date") as string) || undefined;
-  const time = (formData.get("time") as string) || undefined;
-  const durationRaw = formData.get("durationMinutes") as string | null;
-  const durationMinutes = durationRaw ? parseInt(durationRaw, 10) : undefined;
-  const location = (formData.get("location") as string) || undefined;
-  const locationUrl = (formData.get("locationUrl") as string) || undefined;
+  try {
+    const body = await request.json();
+    const { courseId, date, time, durationMinutes } = body;
 
-  if (!title || !file) {
-    return NextResponse.json({ error: "Title and photo are required" }, { status: 400 });
+    if (!courseId) {
+      return NextResponse.json({ error: "courseId is required" }, { status: 400 });
+    }
+
+    const instance = await createCourseInstance(
+      courseId,
+      date || undefined,
+      time || undefined,
+      durationMinutes ? Number(durationMinutes) : undefined
+    );
+
+    return NextResponse.json(instance, { status: 201 });
+  } catch {
+    return NextResponse.json({ error: "Failed to create course instance" }, { status: 500 });
   }
-
-  const buffer = await file.arrayBuffer();
-  const photoUrl = await uploadLessonPhoto(Buffer.from(buffer), file.name, file.type);
-  const lesson = await createLesson(title, photoUrl, description, date, time, durationMinutes, location, locationUrl);
-
-  return NextResponse.json(lesson, { status: 201 });
 }

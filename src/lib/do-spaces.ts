@@ -94,7 +94,94 @@ export async function saveShowsMetadata(items: ShowItem[]): Promise<void> {
   );
 }
 
-// ── Training Lessons ──────────────────────────────────────────────────────────
+// ── Course Templates & Instances ─────────────────────────────────────────────
+
+export interface CourseTemplate {
+  id: string;
+  title: string;
+  photoUrl: string;
+  description: string;
+  location?: string;
+  locationUrl?: string;
+  createdAt: string;
+}
+
+export interface CourseInstance {
+  id: string;
+  courseId: string;
+  date?: string;
+  time?: string;
+  durationMinutes?: number;
+  createdAt: string;
+}
+
+export async function getCourseTemplatesMetadata(): Promise<CourseTemplate[]> {
+  try {
+    const response = await spacesClient.send(
+      new GetObjectCommand({ Bucket: SPACES_NAME, Key: "training/course-templates.json" })
+    );
+    const body = await response.Body?.transformToString();
+    return body ? JSON.parse(body) : [];
+  } catch (error: any) {
+    if (error.name === "NoSuchKey") return [];
+    throw error;
+  }
+}
+
+export async function saveCourseTemplatesMetadata(templates: CourseTemplate[]): Promise<void> {
+  await spacesClient.send(
+    new PutObjectCommand({
+      Bucket: SPACES_NAME,
+      Key: "training/course-templates.json",
+      Body: JSON.stringify(templates, null, 2),
+      ContentType: "application/json",
+    })
+  );
+}
+
+export async function getCourseInstancesMetadata(): Promise<CourseInstance[]> {
+  try {
+    const response = await spacesClient.send(
+      new GetObjectCommand({ Bucket: SPACES_NAME, Key: "training/course-instances.json" })
+    );
+    const body = await response.Body?.transformToString();
+    return body ? JSON.parse(body) : [];
+  } catch (error: any) {
+    if (error.name === "NoSuchKey") return [];
+    throw error;
+  }
+}
+
+export async function saveCourseInstancesMetadata(instances: CourseInstance[]): Promise<void> {
+  await spacesClient.send(
+    new PutObjectCommand({
+      Bucket: SPACES_NAME,
+      Key: "training/course-instances.json",
+      Body: JSON.stringify(instances, null, 2),
+      ContentType: "application/json",
+    })
+  );
+}
+
+export async function uploadCourseTemplatePhoto(
+  file: Buffer,
+  filename: string,
+  mimeType: string
+): Promise<string> {
+  const key = `training/templates/${Date.now()}-${filename}`;
+  await spacesClient.send(
+    new PutObjectCommand({
+      Bucket: SPACES_NAME,
+      Key: key,
+      Body: file,
+      ContentType: mimeType,
+      ACL: "public-read",
+    })
+  );
+  return `https://${SPACES_NAME}.${SPACES_ENDPOINT}/${key}`;
+}
+
+// ── Training Lessons (legacy) ─────────────────────────────────────────────────
 
 export interface Lesson {
   id: string;
