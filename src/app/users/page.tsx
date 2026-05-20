@@ -58,7 +58,7 @@ export default function UsersPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
-      <h1 className="font-display text-2xl font-semibold text-ooo-cream mb-1">oooTheatre Users</h1>
+      <h1 className="font-display text-2xl font-semibold text-ooo-cream mb-1">oooCreatives Users</h1>
       <p className="text-sm text-ooo-muted mb-8">{users.length} registered user{users.length !== 1 ? "s" : ""}</p>
 
       {error && (

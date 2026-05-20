@@ -23,7 +23,7 @@ export async function POST() {
   }
 
   await upsertUserRole(session.userId, "User");
-  await setUserInitiated(session.userId, "oooTheatre");
+  await setUserInitiated(session.userId, "oooCreatives");
 
   return NextResponse.json({ ok: true });
 }
