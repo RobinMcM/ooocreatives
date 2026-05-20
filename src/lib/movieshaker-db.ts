@@ -19,9 +19,7 @@ export async function getUserRole(userId: string): Promise<string | null> {
 
 export async function upsertUserRole(userId: string, role: string): Promise<void> {
   await pool.query(
-    `INSERT INTO user_profile (user_id, role)
-     VALUES ($1, $2)
-     ON CONFLICT (user_id) DO UPDATE SET role = EXCLUDED.role`,
+    `UPDATE user_profile SET role = $2 WHERE user_id = $1`,
     [userId, role]
   );
 }
@@ -114,9 +112,7 @@ export async function upsertUserProfile(
 export async function setUserInitiated(userId: string, initiated: string): Promise<void> {
   await ensureExtraColumns();
   await pool.query(
-    `INSERT INTO user_profile (user_id, initiated)
-     VALUES ($1, $2)
-     ON CONFLICT (user_id) DO UPDATE SET initiated = EXCLUDED.initiated WHERE user_profile.initiated IS NULL`,
+    `UPDATE user_profile SET initiated = $2 WHERE user_id = $1 AND initiated IS NULL`,
     [userId, initiated]
   );
 }
@@ -129,6 +125,15 @@ export interface InitiatedUser {
   company: string | null;
   initiated: string;
   role: string | null;
+}
+
+function normalizeRole(role: string | null): string | null {
+  if (!role) return null;
+  const lower = role.toLowerCase().replace(/_/g, " ");
+  if (lower === "super user") return "Super User";
+  if (lower === "admin") return "Admin";
+  if (lower === "user") return "User";
+  return role;
 }
 
 export async function getUsersByInitiated(initiated: string): Promise<InitiatedUser[]> {
@@ -145,7 +150,7 @@ export async function getUsersByInitiated(initiated: string): Promise<InitiatedU
     username: row.username ?? null,
     company: row.company ?? null,
     initiated: row.initiated,
-    role: row.role ?? null,
+    role: normalizeRole(row.role),
   }));
 }
 
