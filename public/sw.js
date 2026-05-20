@@ -37,6 +37,18 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return;
   if (url.origin !== self.location.origin && !url.hostname.endsWith('digitaloceanspaces.com')) return;
 
+  // Only intercept requests within the /my-academy scope
+  const inScope =
+    url.pathname.startsWith('/my-academy') ||
+    url.pathname.startsWith('/offline') ||
+    url.pathname.startsWith('/api/') ||
+    request.destination === 'script' ||
+    request.destination === 'style' ||
+    request.destination === 'font' ||
+    request.destination === 'image' ||
+    url.hostname.endsWith('digitaloceanspaces.com');
+  if (!inScope) return;
+
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(networkFirst(request, API_CACHE));
     return;
