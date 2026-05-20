@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
-import { Layout } from "@/components/Layout";
+import { AppShell } from "@/components/AppShell";
 import { SuperTokensProvider } from "@/components/SuperTokensProvider";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 
@@ -52,7 +52,7 @@ export default function RootLayout({
       </head>
       <body className={`${cormorant.variable} ${dmSans.variable} antialiased`}>
         <SuperTokensProvider>
-          <Layout>{children}</Layout>
+          <AppShell>{children}</AppShell>
         </SuperTokensProvider>
         <ServiceWorkerRegistration />
       </body>
