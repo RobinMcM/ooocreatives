@@ -7,12 +7,13 @@ import { useSessionContext } from "supertokens-auth-react/recipe/session";
 export default function MyAcademyPage() {
   const router = useRouter();
   const session = useSessionContext();
+  const sessionExists = !session.loading && session.doesSessionExist;
 
   useEffect(() => {
-    if (!session.loading && !session.doesSessionExist) {
+    if (!session.loading && !sessionExists) {
       router.replace("/auth");
     }
-  }, [session.loading, session.doesSessionExist, router]);
+  }, [session.loading, sessionExists, router]);
 
   if (session.loading) {
     return (
@@ -25,7 +26,7 @@ export default function MyAcademyPage() {
     );
   }
 
-  if (!session.doesSessionExist) return null;
+  if (!sessionExists) return null;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
