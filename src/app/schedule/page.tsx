@@ -238,7 +238,7 @@ export default function SchedulePage() {
                     </h2>
                   </Link>
                   <Link
-                    href="/schedule/register"
+                    href={`/schedule/register?courseId=${card.courseId}${card.date ? `&date=${card.date}` : ""}${card.time ? `&time=${encodeURIComponent(card.time)}` : ""}`}
                     className="shrink-0 px-3 py-1 bg-ooo-accent text-ooo-black rounded-md text-xs font-semibold hover:bg-ooo-accent/80 transition-colors"
                   >
                     Register
