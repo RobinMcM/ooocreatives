@@ -30,7 +30,7 @@ export async function PUT(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { name, company, communicationEmail, username, phone, address, actorId, bio, websiteUrl } = body;
+    const { name, company, communicationEmail, username, phone, address, actorId, bio, websiteUrl, showAsCreative } = body;
 
     await upsertUserProfile(session.userId, {
       name: name ?? null,
@@ -40,6 +40,7 @@ export async function PUT(request: NextRequest) {
       phone: phone ?? null,
       address: address ?? null,
       actorId: actorId ?? null,
+      showAsCreative: showAsCreative === true,
     });
 
     if (actorId) {

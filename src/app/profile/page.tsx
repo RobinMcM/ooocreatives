@@ -19,6 +19,7 @@ interface ProfileData {
   phone: string | null;
   address: string | null;
   actorId: string | null;
+  showAsCreative: boolean;
 }
 
 async function authHeaders(): Promise<HeadersInit> {
@@ -43,6 +44,7 @@ export default function ProfilePage() {
   const [actorId, setActorId] = useState("");
   const [bio, setBio] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
+  const [showAsCreative, setShowAsCreative] = useState(false);
 
   useEffect(() => {
     fetch("/api/profile")
@@ -62,6 +64,7 @@ export default function ProfilePage() {
           setPhone(profile.phone ?? "");
           setAddress(profile.address ?? "");
           setActorId(profile.actorId ?? "");
+          setShowAsCreative(profile.showAsCreative ?? false);
           // Pre-fill bio/website from linked actor card
           if (profile.actorId) {
             const linked = (data.actors as Actor[]).find((a) => a.id === profile.actorId);
@@ -114,6 +117,7 @@ export default function ProfilePage() {
           actorId: actorId || null,
           bio: bio || null,
           websiteUrl: websiteUrl || null,
+          showAsCreative,
         }),
       });
       if (!res.ok) {
@@ -240,6 +244,29 @@ export default function ProfilePage() {
               />
             </div>
           </div>
+        </section>
+
+        {/* Creatives directory opt-in */}
+        <section>
+          <h2 className="text-xs uppercase tracking-wide text-ooo-muted border-b border-ooo-slate/50 pb-2 mb-4">
+            Creatives Directory
+          </h2>
+          <label className="flex items-start gap-3 cursor-pointer group">
+            <input
+              type="checkbox"
+              checked={showAsCreative}
+              onChange={(e) => setShowAsCreative(e.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-ooo-slate accent-ooo-accent focus:ring-2 focus:ring-ooo-accent shrink-0"
+            />
+            <span>
+              <span className="block text-sm font-medium text-ooo-cream group-hover:text-ooo-accent transition-colors">
+                Show me as a Creative on the Creatives page
+              </span>
+              <span className="block text-xs text-ooo-muted mt-0.5">
+                Your name, bio, and photo will appear in the public Creatives directory.
+              </span>
+            </span>
+          </label>
         </section>
 
         {/* Creative Listing */}

@@ -35,22 +35,30 @@ export interface UserProfile {
   phone: string | null;
   address: string | null;
   actorId: string | null;
+  showAsCreative: boolean;
 }
 
-let actorIdColumnReady = false;
+export interface OptedInCreative {
+  userId: string;
+  name: string | null;
+  actorId: string | null;
+}
 
-async function ensureActorIdColumn(): Promise<void> {
-  if (actorIdColumnReady) return;
-  await pool.query(
-    `ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS actor_id VARCHAR(255)`
-  );
-  actorIdColumnReady = true;
+let extraColumnsReady = false;
+
+async function ensureExtraColumns(): Promise<void> {
+  if (extraColumnsReady) return;
+  await pool.query(`
+    ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS actor_id VARCHAR(255);
+    ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS show_as_creative BOOLEAN DEFAULT FALSE;
+  `);
+  extraColumnsReady = true;
 }
 
 export async function getUserProfile(userId: string): Promise<UserProfile | null> {
-  await ensureActorIdColumn();
+  await ensureExtraColumns();
   const result = await pool.query(
-    `SELECT user_id, name, company, communication_email, username, phone, address, actor_id
+    `SELECT user_id, name, company, communication_email, username, phone, address, actor_id, show_as_creative
      FROM user_profile WHERE user_id = $1`,
     [userId]
   );
@@ -65,6 +73,7 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
     phone: row.phone ?? null,
     address: row.address ?? null,
     actorId: row.actor_id ?? null,
+    showAsCreative: row.show_as_creative ?? false,
   };
 }
 
@@ -72,7 +81,7 @@ export async function upsertUserProfile(
   userId: string,
   data: Omit<UserProfile, "userId">
 ): Promise<void> {
-  await ensureActorIdColumn();
+  await ensureExtraColumns();
   await pool.query(
     `UPDATE user_profile
      SET name = $2,
@@ -82,6 +91,7 @@ export async function upsertUserProfile(
          phone = $6,
          address = $7,
          actor_id = $8,
+         show_as_creative = $9,
          updated_at = NOW()
      WHERE user_id = $1`,
     [
@@ -93,6 +103,19 @@ export async function upsertUserProfile(
       data.phone,
       data.address,
       data.actorId,
+      data.showAsCreative,
     ]
   );
+}
+
+export async function getOptedInCreatives(): Promise<OptedInCreative[]> {
+  await ensureExtraColumns();
+  const result = await pool.query(
+    `SELECT user_id, name, actor_id FROM user_profile WHERE show_as_creative = true`
+  );
+  return result.rows.map((row) => ({
+    userId: row.user_id,
+    name: row.name ?? null,
+    actorId: row.actor_id ?? null,
+  }));
 }
