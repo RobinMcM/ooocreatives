@@ -36,6 +36,7 @@ export interface UserProfile {
   address: string | null;
   actorId: string | null;
   showAsCreative: boolean;
+  initiated: string | null;
 }
 
 export interface OptedInCreative {
@@ -51,6 +52,7 @@ async function ensureExtraColumns(): Promise<void> {
   await pool.query(`
     ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS actor_id VARCHAR(255);
     ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS show_as_creative BOOLEAN DEFAULT FALSE;
+    ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS initiated VARCHAR(255);
   `);
   extraColumnsReady = true;
 }
@@ -58,7 +60,7 @@ async function ensureExtraColumns(): Promise<void> {
 export async function getUserProfile(userId: string): Promise<UserProfile | null> {
   await ensureExtraColumns();
   const result = await pool.query(
-    `SELECT user_id, name, company, communication_email, username, phone, address, actor_id, show_as_creative
+    `SELECT user_id, name, company, communication_email, username, phone, address, actor_id, show_as_creative, initiated
      FROM user_profile WHERE user_id = $1`,
     [userId]
   );
@@ -74,6 +76,7 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
     address: row.address ?? null,
     actorId: row.actor_id ?? null,
     showAsCreative: row.show_as_creative ?? false,
+    initiated: row.initiated ?? null,
   };
 }
 
@@ -106,6 +109,44 @@ export async function upsertUserProfile(
       data.showAsCreative,
     ]
   );
+}
+
+export async function setUserInitiated(userId: string, initiated: string): Promise<void> {
+  await ensureExtraColumns();
+  await pool.query(
+    `INSERT INTO user_profile (user_id, initiated)
+     VALUES ($1, $2)
+     ON CONFLICT (user_id) DO UPDATE SET initiated = EXCLUDED.initiated WHERE user_profile.initiated IS NULL`,
+    [userId, initiated]
+  );
+}
+
+export interface InitiatedUser {
+  userId: string;
+  name: string | null;
+  communicationEmail: string | null;
+  username: string | null;
+  company: string | null;
+  initiated: string;
+  role: string | null;
+}
+
+export async function getUsersByInitiated(initiated: string): Promise<InitiatedUser[]> {
+  await ensureExtraColumns();
+  const result = await pool.query(
+    `SELECT user_id, name, communication_email, username, company, initiated, role
+     FROM user_profile WHERE initiated = $1 ORDER BY name ASC NULLS LAST`,
+    [initiated]
+  );
+  return result.rows.map((row) => ({
+    userId: row.user_id,
+    name: row.name ?? null,
+    communicationEmail: row.communication_email ?? null,
+    username: row.username ?? null,
+    company: row.company ?? null,
+    initiated: row.initiated,
+    role: row.role ?? null,
+  }));
 }
 
 export async function getOptedInCreatives(): Promise<OptedInCreative[]> {

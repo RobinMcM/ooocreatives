@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSessionForValidation } from "@/lib/supertokens/server";
-import { upsertUserRole } from "@/lib/movieshaker-db";
+import { upsertUserRole, setUserInitiated } from "@/lib/movieshaker-db";
 
 export async function POST() {
   const session = await getSessionForValidation();
@@ -23,6 +23,7 @@ export async function POST() {
   }
 
   await upsertUserRole(session.userId, "User");
+  await setUserInitiated(session.userId, "oooTheatre");
 
   return NextResponse.json({ ok: true });
 }
