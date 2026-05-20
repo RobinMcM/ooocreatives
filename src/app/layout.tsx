@@ -3,6 +3,7 @@ import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { Layout } from "@/components/Layout";
 import { SuperTokensProvider } from "@/components/SuperTokensProvider";
+import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -21,13 +22,14 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "Out of Office Creatives",
   description: "Theatre platform for ooocreatives.com",
+  manifest: "/manifest.json",
   icons: {
     icon: "/favicon.svg",
-    apple: "/favicon.svg",
+    apple: "/apple-icon-180x180.png",
   },
   appleWebApp: {
     capable: true,
-    title: "OOO Creatives",
+    title: "OOO Academy",
     statusBarStyle: "black-translucent",
   },
 };
@@ -52,6 +54,7 @@ export default function RootLayout({
         <SuperTokensProvider>
           <Layout>{children}</Layout>
         </SuperTokensProvider>
+        <ServiceWorkerRegistration />
       </body>
     </html>
   );
