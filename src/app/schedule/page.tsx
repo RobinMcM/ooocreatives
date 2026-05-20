@@ -229,24 +229,34 @@ export default function SchedulePage() {
                     className="object-cover group-hover:opacity-90 transition-opacity"
                   />
                 </div>
-                <div className="p-4">
-                  <h2 className="font-display text-xl font-semibold text-ooo-cream group-hover:text-ooo-accent transition-colors">
-                    {card.title}
-                  </h2>
-                  {(card.date || card.time) && (
-                    <p className="text-xs text-ooo-accent mt-1 flex gap-3">
-                      {card.date && <span>{formatDate(card.date)}</span>}
-                      {card.time && <span>{card.time}</span>}
-                    </p>
-                  )}
-                  {card.durationMinutes && (
-                    <p className="text-xs text-ooo-muted mt-0.5">{card.durationMinutes} mins</p>
-                  )}
-                  {card.location && (
-                    <p className="text-xs text-ooo-muted mt-0.5">{card.location}</p>
-                  )}
-                </div>
               </Link>
+              <div className="p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <Link href={`/schedule/courses/${card.courseId}`}>
+                    <h2 className="font-display text-xl font-semibold text-ooo-cream hover:text-ooo-accent transition-colors">
+                      {card.title}
+                    </h2>
+                  </Link>
+                  <Link
+                    href="/schedule/register"
+                    className="shrink-0 px-3 py-1 bg-ooo-accent text-ooo-black rounded-md text-xs font-semibold hover:bg-ooo-accent/80 transition-colors"
+                  >
+                    Register
+                  </Link>
+                </div>
+                {(card.date || card.time) && (
+                  <p className="text-xs text-ooo-accent mt-1 flex gap-3">
+                    {card.date && <span>{formatDate(card.date)}</span>}
+                    {card.time && <span>{card.time}</span>}
+                  </p>
+                )}
+                {card.durationMinutes && (
+                  <p className="text-xs text-ooo-muted mt-0.5">{card.durationMinutes} mins</p>
+                )}
+                {card.location && (
+                  <p className="text-xs text-ooo-muted mt-0.5">{card.location}</p>
+                )}
+              </div>
 
               {isAdmin && (
                 <div className="absolute top-2 right-2 flex gap-1">
