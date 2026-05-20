@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getSessionForValidation } from "@/lib/supertokens/server";
 import { getUserRole, getUsersByInitiated } from "@/lib/movieshaker-db";
 
-const ADMIN_ROLES = ["admin", "super_user", "super user", "Admin", "Super User"];
+const ADMIN_ROLES = ["admin", "Admin"];
 
 export async function GET() {
   const session = await getSessionForValidation();

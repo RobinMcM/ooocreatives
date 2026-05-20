@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserRoles } from "@/lib/useUserRoles";
 
-const ADMIN_ROLES = ["admin", "super_user", "super user", "Admin", "Super User"];
+const ADMIN_ROLES = ["admin", "Admin"];
 
 interface User {
   userId: string;

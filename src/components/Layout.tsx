@@ -9,7 +9,7 @@ import { useUserDisplayName } from "@/lib/useUserDisplayName";
 import { useUserRoles } from "@/lib/useUserRoles";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
-const ADMIN_ROLES = ["admin", "super_user", "super user", "Admin", "Super User"];
+const ADMIN_ROLES = ["admin", "Admin"];
 
 const navLinks = [
   { href: "/", label: "Home" },
