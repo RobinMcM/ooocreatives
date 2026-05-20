@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSessionContext } from "supertokens-auth-react/recipe/session";
 import Session from "supertokens-auth-react/recipe/session";
-import { useUserRoles } from "@/lib/useUserRoles";
+import { useUserDisplayName } from "@/lib/useUserDisplayName";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const navLinks = [
@@ -21,7 +21,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const sessionContext = useSessionContext();
   const sessionExists = !sessionContext.loading && sessionContext.doesSessionExist;
   const authLoading = sessionContext.loading;
-  const { roles } = useUserRoles();
+  const displayName = useUserDisplayName();
   const pathname = usePathname();
   const authMenuRef = useRef<HTMLDivElement>(null);
 
@@ -124,22 +124,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       role="menu"
                       aria-label="User menu"
                     >
-                      <div className="px-4 py-3 border-b border-ooo-slate/70">
-                        <p className="text-xs uppercase tracking-wide text-ooo-muted">Account</p>
-                        <p className="text-sm text-ooo-cream">Signed in</p>
-                        {roles.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-1.5">
-                            {roles.map((role) => (
-                              <span
-                                key={role}
-                                className="text-xs px-1.5 py-0.5 rounded bg-ooo-slate text-ooo-accent border border-ooo-accent/30"
-                              >
-                                {role}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                      {displayName && (
+                        <div className="px-4 py-3 border-b border-ooo-slate/70">
+                          <p className="text-sm font-medium text-ooo-cream truncate">{displayName}</p>
+                        </div>
+                      )}
                       <Link
                         href="/profile"
                         onClick={() => setAuthMenuOpen(false)}

@@ -15,6 +15,17 @@ export default async function CoursePage({
 
   return (
     <div className="max-w-4xl mx-auto px-4 pb-12">
+      <div className="pt-6 mb-2">
+        <Link
+          href="/schedule/courses"
+          className="inline-flex items-center gap-1.5 text-sm text-ooo-muted hover:text-ooo-cream transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to Courses
+        </Link>
+      </div>
       <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 mb-6 pt-8">
         <h1 className="font-display text-4xl md:text-5xl font-bold text-ooo-cream text-center">
           {course.title}
