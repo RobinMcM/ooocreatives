@@ -74,17 +74,16 @@ export async function upsertUserProfile(
 ): Promise<void> {
   await ensureActorIdColumn();
   await pool.query(
-    `INSERT INTO user_profile (user_id, name, company, communication_email, username, phone, address, actor_id)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-     ON CONFLICT (user_id) DO UPDATE SET
-       name = EXCLUDED.name,
-       company = EXCLUDED.company,
-       communication_email = EXCLUDED.communication_email,
-       username = EXCLUDED.username,
-       phone = EXCLUDED.phone,
-       address = EXCLUDED.address,
-       actor_id = EXCLUDED.actor_id,
-       updated_at = NOW()`,
+    `UPDATE user_profile
+     SET name = $2,
+         company = $3,
+         communication_email = $4,
+         username = $5,
+         phone = $6,
+         address = $7,
+         actor_id = $8,
+         updated_at = NOW()
+     WHERE user_id = $1`,
     [
       userId,
       data.name,
