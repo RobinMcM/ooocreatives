@@ -2,14 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import Session from "supertokens-auth-react/recipe/session";
-
-interface Actor {
-  id: string;
-  name: string;
-  bio?: string;
-  bioUrl?: string;
-}
 
 interface ProfileData {
   name: string | null;
@@ -20,6 +14,13 @@ interface ProfileData {
   address: string | null;
   actorId: string | null;
   showAsCreative: boolean;
+}
+
+interface ActorCard {
+  title?: string;
+  bio?: string;
+  bioUrl?: string;
+  photoUrl?: string;
 }
 
 async function authHeaders(): Promise<HeadersInit> {
@@ -33,29 +34,33 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [actors, setActors] = useState<Actor[]>([]);
 
+  // Contact details
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
   const [communicationEmail, setCommunicationEmail] = useState("");
   const [username, setUsername] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
-  const [actorId, setActorId] = useState("");
+
+  // Opt-in
+  const [showAsCreative, setShowAsCreative] = useState(false);
+
+  // Creative profile
+  const [title, setTitle] = useState("");
   const [bio, setBio] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
-  const [showAsCreative, setShowAsCreative] = useState(false);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [existingPhotoUrl, setExistingPhotoUrl] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/profile")
       .then(async (res) => {
-        if (res.status === 401) {
-          router.push("/auth");
-          return;
-        }
+        if (res.status === 401) { router.push("/auth"); return; }
         const data = await res.json();
         const profile: ProfileData = data.profile;
-        setActors(data.actors ?? []);
+        const actorCard: ActorCard | null = data.actorCard;
+
         if (profile) {
           setName(profile.name ?? "");
           setCompany(profile.company ?? "");
@@ -63,39 +68,18 @@ export default function ProfilePage() {
           setUsername(profile.username ?? "");
           setPhone(profile.phone ?? "");
           setAddress(profile.address ?? "");
-          setActorId(profile.actorId ?? "");
           setShowAsCreative(profile.showAsCreative ?? false);
-          // Pre-fill bio/website from linked actor card
-          if (profile.actorId) {
-            const linked = (data.actors as Actor[]).find((a) => a.id === profile.actorId);
-            if (linked) {
-              setBio(linked.bio ?? "");
-              setWebsiteUrl(linked.bioUrl ?? "");
-            }
-          }
+        }
+        if (actorCard) {
+          setTitle(actorCard.title ?? "");
+          setBio(actorCard.bio ?? "");
+          setWebsiteUrl(actorCard.bioUrl ?? "");
+          setExistingPhotoUrl(actorCard.photoUrl ?? null);
         }
         setLoading(false);
       })
-      .catch(() => {
-        setError("Failed to load profile.");
-        setLoading(false);
-      });
+      .catch(() => { setError("Failed to load profile."); setLoading(false); });
   }, [router]);
-
-  // When actor selection changes, pre-fill bio/website from that actor
-  const handleActorChange = (id: string) => {
-    setActorId(id);
-    if (id) {
-      const selected = actors.find((a) => a.id === id);
-      if (selected) {
-        setBio(selected.bio ?? "");
-        setWebsiteUrl(selected.bioUrl ?? "");
-      }
-    } else {
-      setBio("");
-      setWebsiteUrl("");
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,27 +87,29 @@ export default function ProfilePage() {
     setError(null);
     setSuccess(false);
     try {
+      const fd = new FormData();
+      fd.append("name", name);
+      fd.append("company", company);
+      fd.append("communicationEmail", communicationEmail);
+      fd.append("username", username);
+      fd.append("phone", phone);
+      fd.append("address", address);
+      fd.append("showAsCreative", showAsCreative ? "true" : "false");
+      fd.append("title", title);
+      fd.append("bio", bio);
+      fd.append("websiteUrl", websiteUrl);
+      if (photoFile) fd.append("photo", photoFile);
+
       const headers = await authHeaders();
-      const res = await fetch("/api/profile", {
-        method: "PUT",
-        headers: { ...headers, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name || null,
-          company: company || null,
-          communicationEmail: communicationEmail || null,
-          username: username || null,
-          phone: phone || null,
-          address: address || null,
-          actorId: actorId || null,
-          bio: bio || null,
-          websiteUrl: websiteUrl || null,
-          showAsCreative,
-        }),
-      });
+      const res = await fetch("/api/profile", { method: "PUT", headers, body: fd });
+
       if (!res.ok) {
         const data = await res.json();
         setError(data.error ?? "Failed to save profile.");
       } else {
+        const data = await res.json();
+        if (data.actorCard?.photoUrl) setExistingPhotoUrl(data.actorCard.photoUrl);
+        setPhotoFile(null);
         setSuccess(true);
       }
     } catch {
@@ -145,119 +131,66 @@ export default function ProfilePage() {
     );
   }
 
-  const linkedActor = actorId ? actors.find((a) => a.id === actorId) : null;
-
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
       <h1 className="font-display text-2xl font-semibold text-ooo-cream mb-1">My Profile</h1>
       <p className="text-sm text-ooo-muted mb-8">Your contact details on the MovieShaker platform.</p>
 
       <form onSubmit={handleSubmit} className="space-y-8">
+
         {/* Contact Details */}
         <section className="space-y-5">
           <h2 className="text-xs uppercase tracking-wide text-ooo-muted border-b border-ooo-slate/50 pb-2">
             Contact Details
           </h2>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label className="block text-sm font-medium text-ooo-cream mb-1.5" htmlFor="name">
-                Display Name
-              </label>
-              <input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+              <label className="block text-sm font-medium text-ooo-cream mb-1.5" htmlFor="name">Display Name</label>
+              <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)}
                 placeholder="Your full name"
-                className="w-full px-3 py-2 rounded bg-ooo-slate/30 border border-ooo-slate text-ooo-cream placeholder:text-ooo-muted focus:outline-none focus:ring-2 focus:ring-ooo-accent text-sm"
-              />
+                className="w-full px-3 py-2 rounded bg-ooo-slate/30 border border-ooo-slate text-ooo-cream placeholder:text-ooo-muted focus:outline-none focus:ring-2 focus:ring-ooo-accent text-sm" />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-ooo-cream mb-1.5" htmlFor="username">
-                Username
-              </label>
-              <input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+              <label className="block text-sm font-medium text-ooo-cream mb-1.5" htmlFor="username">Username</label>
+              <input id="username" type="text" value={username} onChange={(e) => setUsername(e.target.value)}
                 placeholder="username"
-                className="w-full px-3 py-2 rounded bg-ooo-slate/30 border border-ooo-slate text-ooo-cream placeholder:text-ooo-muted focus:outline-none focus:ring-2 focus:ring-ooo-accent text-sm"
-              />
+                className="w-full px-3 py-2 rounded bg-ooo-slate/30 border border-ooo-slate text-ooo-cream placeholder:text-ooo-muted focus:outline-none focus:ring-2 focus:ring-ooo-accent text-sm" />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-ooo-cream mb-1.5" htmlFor="phone">
-                Phone
-              </label>
-              <input
-                id="phone"
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+              <label className="block text-sm font-medium text-ooo-cream mb-1.5" htmlFor="phone">Phone</label>
+              <input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
                 placeholder="+44 7700 000000"
-                className="w-full px-3 py-2 rounded bg-ooo-slate/30 border border-ooo-slate text-ooo-cream placeholder:text-ooo-muted focus:outline-none focus:ring-2 focus:ring-ooo-accent text-sm"
-              />
+                className="w-full px-3 py-2 rounded bg-ooo-slate/30 border border-ooo-slate text-ooo-cream placeholder:text-ooo-muted focus:outline-none focus:ring-2 focus:ring-ooo-accent text-sm" />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-ooo-cream mb-1.5" htmlFor="communicationEmail">
-                Contact Email
-              </label>
-              <input
-                id="communicationEmail"
-                type="email"
-                value={communicationEmail}
-                onChange={(e) => setCommunicationEmail(e.target.value)}
+              <label className="block text-sm font-medium text-ooo-cream mb-1.5" htmlFor="communicationEmail">Contact Email</label>
+              <input id="communicationEmail" type="email" value={communicationEmail} onChange={(e) => setCommunicationEmail(e.target.value)}
                 placeholder="contact@example.com"
-                className="w-full px-3 py-2 rounded bg-ooo-slate/30 border border-ooo-slate text-ooo-cream placeholder:text-ooo-muted focus:outline-none focus:ring-2 focus:ring-ooo-accent text-sm"
-              />
+                className="w-full px-3 py-2 rounded bg-ooo-slate/30 border border-ooo-slate text-ooo-cream placeholder:text-ooo-muted focus:outline-none focus:ring-2 focus:ring-ooo-accent text-sm" />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-ooo-cream mb-1.5" htmlFor="company">
-                Company
-              </label>
-              <input
-                id="company"
-                type="text"
-                value={company}
-                onChange={(e) => setCompany(e.target.value)}
+              <label className="block text-sm font-medium text-ooo-cream mb-1.5" htmlFor="company">Company</label>
+              <input id="company" type="text" value={company} onChange={(e) => setCompany(e.target.value)}
                 placeholder="Company or agency"
-                className="w-full px-3 py-2 rounded bg-ooo-slate/30 border border-ooo-slate text-ooo-cream placeholder:text-ooo-muted focus:outline-none focus:ring-2 focus:ring-ooo-accent text-sm"
-              />
+                className="w-full px-3 py-2 rounded bg-ooo-slate/30 border border-ooo-slate text-ooo-cream placeholder:text-ooo-muted focus:outline-none focus:ring-2 focus:ring-ooo-accent text-sm" />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-ooo-cream mb-1.5" htmlFor="address">
-                Address
-              </label>
-              <input
-                id="address"
-                type="text"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
+              <label className="block text-sm font-medium text-ooo-cream mb-1.5" htmlFor="address">Address</label>
+              <input id="address" type="text" value={address} onChange={(e) => setAddress(e.target.value)}
                 placeholder="City, Country"
-                className="w-full px-3 py-2 rounded bg-ooo-slate/30 border border-ooo-slate text-ooo-cream placeholder:text-ooo-muted focus:outline-none focus:ring-2 focus:ring-ooo-accent text-sm"
-              />
+                className="w-full px-3 py-2 rounded bg-ooo-slate/30 border border-ooo-slate text-ooo-cream placeholder:text-ooo-muted focus:outline-none focus:ring-2 focus:ring-ooo-accent text-sm" />
             </div>
           </div>
         </section>
 
-        {/* Creatives directory opt-in */}
+        {/* Creatives Directory opt-in */}
         <section>
           <h2 className="text-xs uppercase tracking-wide text-ooo-muted border-b border-ooo-slate/50 pb-2 mb-4">
             Creatives Directory
           </h2>
           <label className="flex items-start gap-3 cursor-pointer group">
-            <input
-              type="checkbox"
-              checked={showAsCreative}
-              onChange={(e) => setShowAsCreative(e.target.checked)}
-              className="mt-0.5 h-4 w-4 rounded border-ooo-slate accent-ooo-accent focus:ring-2 focus:ring-ooo-accent shrink-0"
-            />
+            <input type="checkbox" checked={showAsCreative} onChange={(e) => setShowAsCreative(e.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-ooo-slate accent-ooo-accent focus:ring-2 focus:ring-ooo-accent shrink-0" />
             <span>
               <span className="block text-sm font-medium text-ooo-cream group-hover:text-ooo-accent transition-colors">
                 Show me as a Creative on the Creatives page
@@ -269,71 +202,62 @@ export default function ProfilePage() {
           </label>
         </section>
 
-        {/* Creative Listing */}
+        {/* Creative Profile */}
         <section className="space-y-5">
           <h2 className="text-xs uppercase tracking-wide text-ooo-muted border-b border-ooo-slate/50 pb-2">
             Creative Profile
           </h2>
-          <p className="text-xs text-ooo-muted">
-            Link your account to your Creative listing. Bio and website saved here will update your public actor card.
-          </p>
 
+          {/* Photo */}
           <div>
-            <label className="block text-sm font-medium text-ooo-cream mb-1.5" htmlFor="actorId">
-              My Creative Listing
+            <label className="block text-sm font-medium text-ooo-cream mb-1.5">
+              Photo
+              {existingPhotoUrl && (
+                <span className="ml-2 text-xs text-ooo-muted font-normal">(leave blank to keep current)</span>
+              )}
             </label>
-            <select
-              id="actorId"
-              value={actorId}
-              onChange={(e) => handleActorChange(e.target.value)}
-              className="w-full px-3 py-2 rounded bg-ooo-slate/30 border border-ooo-slate text-ooo-cream focus:outline-none focus:ring-2 focus:ring-ooo-accent text-sm"
-            >
-              <option value="">— None —</option>
-              {actors.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.name}
-                </option>
-              ))}
-            </select>
+            {existingPhotoUrl && (
+              <div className="mb-3 w-20 h-20 relative rounded-lg overflow-hidden bg-ooo-slate">
+                <Image src={existingPhotoUrl} alt="Current photo" fill className="object-cover" />
+              </div>
+            )}
+            <input type="file" accept="image/*" onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)}
+              className="w-full px-3 py-2 rounded bg-ooo-slate/30 border border-ooo-slate text-ooo-muted focus:outline-none focus:ring-2 focus:ring-ooo-accent text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-ooo-accent file:text-ooo-ink hover:file:bg-ooo-accent/90" />
+            {photoFile && <p className="mt-1.5 text-xs text-ooo-muted">Selected: {photoFile.name}</p>}
           </div>
 
-          {linkedActor && (
-            <div className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-ooo-cream mb-1.5" htmlFor="websiteUrl">
-                  Website / Portfolio URL
-                </label>
-                <input
-                  id="websiteUrl"
-                  type="url"
-                  value={websiteUrl}
-                  onChange={(e) => setWebsiteUrl(e.target.value)}
-                  placeholder="https://yourportfolio.com"
-                  className="w-full px-3 py-2 rounded bg-ooo-slate/30 border border-ooo-slate text-ooo-cream placeholder:text-ooo-muted focus:outline-none focus:ring-2 focus:ring-ooo-accent text-sm"
-                />
-              </div>
+          {/* Title */}
+          <div>
+            <label className="block text-sm font-medium text-ooo-cream mb-1.5" htmlFor="title">
+              Title <span className="text-ooo-muted font-normal text-xs">(e.g. Actor, Director, Producer)</span>
+            </label>
+            <input id="title" type="text" value={title} onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. Actor, Director, Producer"
+              className="w-full px-3 py-2 rounded bg-ooo-slate/30 border border-ooo-slate text-ooo-cream placeholder:text-ooo-muted focus:outline-none focus:ring-2 focus:ring-ooo-accent text-sm" />
+          </div>
 
-              <div>
-                <label className="block text-sm font-medium text-ooo-cream mb-1.5" htmlFor="bio">
-                  Bio
-                </label>
-                <textarea
-                  id="bio"
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  placeholder="A short biography shown on your Creative listing…"
-                  rows={4}
-                  className="w-full px-3 py-2 rounded bg-ooo-slate/30 border border-ooo-slate text-ooo-cream placeholder:text-ooo-muted focus:outline-none focus:ring-2 focus:ring-ooo-accent text-sm resize-none"
-                />
-              </div>
-            </div>
-          )}
+          {/* Bio */}
+          <div>
+            <label className="block text-sm font-medium text-ooo-cream mb-1.5" htmlFor="bio">Bio</label>
+            <textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)}
+              placeholder="A short biography shown on your Creative listing…"
+              rows={4}
+              className="w-full px-3 py-2 rounded bg-ooo-slate/30 border border-ooo-slate text-ooo-cream placeholder:text-ooo-muted focus:outline-none focus:ring-2 focus:ring-ooo-accent text-sm resize-none" />
+          </div>
+
+          {/* Portfolio link */}
+          <div>
+            <label className="block text-sm font-medium text-ooo-cream mb-1.5" htmlFor="websiteUrl">
+              Portfolio / Bio Link <span className="text-ooo-muted font-normal text-xs">(opens when photo is clicked)</span>
+            </label>
+            <input id="websiteUrl" type="url" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)}
+              placeholder="https://yourportfolio.com"
+              className="w-full px-3 py-2 rounded bg-ooo-slate/30 border border-ooo-slate text-ooo-cream placeholder:text-ooo-muted focus:outline-none focus:ring-2 focus:ring-ooo-accent text-sm" />
+          </div>
         </section>
 
         {error && (
-          <p className="text-sm text-red-400 bg-red-900/20 border border-red-700/40 rounded px-3 py-2">
-            {error}
-          </p>
+          <p className="text-sm text-red-400 bg-red-900/20 border border-red-700/40 rounded px-3 py-2">{error}</p>
         )}
         {success && (
           <p className="text-sm text-green-400 bg-green-900/20 border border-green-700/40 rounded px-3 py-2">
@@ -341,11 +265,8 @@ export default function ProfilePage() {
           </p>
         )}
 
-        <button
-          type="submit"
-          disabled={saving}
-          className="px-6 py-2.5 rounded bg-ooo-accent text-ooo-ink font-medium text-sm hover:bg-ooo-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ooo-accent"
-        >
+        <button type="submit" disabled={saving}
+          className="px-6 py-2.5 rounded bg-ooo-accent text-ooo-ink font-medium text-sm hover:bg-ooo-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ooo-accent">
           {saving ? "Saving…" : "Save Profile"}
         </button>
       </form>
