@@ -82,7 +82,7 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
 
 export async function upsertUserProfile(
   userId: string,
-  data: Omit<UserProfile, "userId">
+  data: Omit<UserProfile, "userId" | "initiated">
 ): Promise<void> {
   await ensureExtraColumns();
   await pool.query(
