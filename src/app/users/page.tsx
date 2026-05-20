@@ -16,14 +16,36 @@ interface User {
   role: string | null;
 }
 
+const ASSIGNABLE_ROLES = ["User", "Super User"];
+
 export default function UsersPage() {
   const router = useRouter();
   const { roles, loading: rolesLoading } = useUserRoles();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [savingRole, setSavingRole] = useState<string | null>(null);
 
   const isAdmin = !rolesLoading && roles.some((r) => ADMIN_ROLES.includes(r));
+
+  const handleRoleChange = async (userId: string, newRole: string) => {
+    setSavingRole(userId);
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/role`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role: newRole }),
+      });
+      if (!res.ok) throw new Error();
+      setUsers((prev) =>
+        prev.map((u) => (u.userId === userId ? { ...u, role: newRole } : u))
+      );
+    } catch {
+      setError("Failed to update role.");
+    } finally {
+      setSavingRole(null);
+    }
+  };
 
   useEffect(() => {
     if (rolesLoading) return;
@@ -99,13 +121,16 @@ export default function UsersPage() {
                     {user.company ?? <span className="italic">—</span>}
                   </td>
                   <td className="px-4 py-3">
-                    {user.role ? (
-                      <span className="text-xs px-2 py-0.5 rounded bg-ooo-slate text-ooo-accent border border-ooo-accent/30">
-                        {user.role}
-                      </span>
-                    ) : (
-                      <span className="text-ooo-muted italic text-xs">—</span>
-                    )}
+                    <select
+                      value={user.role ?? "User"}
+                      disabled={savingRole === user.userId}
+                      onChange={(e) => handleRoleChange(user.userId, e.target.value)}
+                      className="text-xs px-2 py-1 rounded bg-ooo-slate border border-ooo-slate text-ooo-cream focus:outline-none focus:ring-2 focus:ring-ooo-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {ASSIGNABLE_ROLES.map((r) => (
+                        <option key={r} value={r}>{r}</option>
+                      ))}
+                    </select>
                   </td>
                 </tr>
               ))}
