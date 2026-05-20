@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Session from "supertokens-auth-react/recipe/session";
+import { useUserRoles } from "@/lib/useUserRoles";
 
 interface ProfileData {
   name: string | null;
@@ -30,6 +31,7 @@ async function authHeaders(): Promise<HeadersInit> {
 
 export default function ProfilePage() {
   const router = useRouter();
+  const { roles } = useUserRoles();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -133,7 +135,21 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
-      <h1 className="font-display text-2xl font-semibold text-ooo-cream mb-1">My Profile</h1>
+      <div className="flex items-center gap-3 mb-1">
+        <h1 className="font-display text-2xl font-semibold text-ooo-cream">My Profile</h1>
+        {roles.length > 0 && (
+          <div className="flex gap-1.5">
+            {roles.map((role) => (
+              <span
+                key={role}
+                className="text-xs px-2 py-0.5 rounded bg-ooo-slate text-ooo-accent border border-ooo-accent/30 font-medium"
+              >
+                {role}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
       <p className="text-sm text-ooo-muted mb-8">Your contact details on the MovieShaker platform.</p>
 
       <form onSubmit={handleSubmit} className="space-y-8">
