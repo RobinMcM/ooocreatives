@@ -91,18 +91,28 @@ export default function Courses() {
                     className="object-cover group-hover:opacity-90 transition-opacity"
                   />
                 </div>
-                <div className="p-4">
-                  <h2 className="font-display text-xl font-semibold text-ooo-cream group-hover:text-ooo-accent transition-colors">
-                    {course.title}
-                  </h2>
-                  {course.durationMinutes && (
-                    <p className="text-xs text-ooo-muted mt-1">{course.durationMinutes} mins</p>
-                  )}
-                  {course.location && (
-                    <p className="text-xs text-ooo-muted mt-0.5">{course.location}</p>
-                  )}
-                </div>
               </Link>
+              <div className="p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <Link href={`/schedule/courses/${course.id}`}>
+                    <h2 className="font-display text-xl font-semibold text-ooo-cream hover:text-ooo-accent transition-colors">
+                      {course.title}
+                    </h2>
+                  </Link>
+                  <Link
+                    href="/schedule/register"
+                    className="shrink-0 px-3 py-1 bg-ooo-accent text-ooo-black rounded-md text-xs font-semibold hover:bg-ooo-accent/80 transition-colors"
+                  >
+                    Register
+                  </Link>
+                </div>
+                {course.durationMinutes && (
+                  <p className="text-xs text-ooo-muted mt-1">{course.durationMinutes} mins</p>
+                )}
+                {course.location && (
+                  <p className="text-xs text-ooo-muted mt-0.5">{course.location}</p>
+                )}
+              </div>
 
               {isAdmin && (
                 <div className="absolute top-2 right-2 flex gap-1">

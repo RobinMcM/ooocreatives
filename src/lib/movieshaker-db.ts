@@ -16,3 +16,12 @@ export async function getUserRole(userId: string): Promise<string | null> {
   );
   return result.rows[0]?.role ?? null;
 }
+
+export async function upsertUserRole(userId: string, role: string): Promise<void> {
+  await pool.query(
+    `INSERT INTO user_profile (user_id, role)
+     VALUES ($1, $2)
+     ON CONFLICT (user_id) DO UPDATE SET role = EXCLUDED.role`,
+    [userId, role]
+  );
+}

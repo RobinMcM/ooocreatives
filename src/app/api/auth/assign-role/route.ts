@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSessionForValidation } from "@/lib/supertokens/server";
+import { upsertUserRole } from "@/lib/movieshaker-db";
 
 export async function POST() {
   const session = await getSessionForValidation();
@@ -20,6 +21,8 @@ export async function POST() {
     console.error("[assign-role] SuperTokens API error:", res.status, await res.text());
     return NextResponse.json({ error: "Failed to assign role" }, { status: 500 });
   }
+
+  await upsertUserRole(session.userId, "User");
 
   return NextResponse.json({ ok: true });
 }
