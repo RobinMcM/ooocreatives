@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    title: "OOO Academy",
+    title: "OOO Creatives",
     statusBarStyle: "black-translucent",
   },
 };

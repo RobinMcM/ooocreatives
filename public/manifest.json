@@ -1,13 +1,13 @@
 {
-  "name": "OOO Academy",
-  "short_name": "OOO Academy",
-  "description": "Your personal theatre training dashboard",
-  "start_url": "/my-academy",
+  "name": "OOO Creatives",
+  "short_name": "OOO Creatives",
+  "description": "Out of Office Creatives — shows, creatives, academy and more",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0a",
   "theme_color": "#0a0a0a",
   "orientation": "portrait-primary",
-  "scope": "/my-academy/",
+  "scope": "/",
   "icons": [
     {
       "src": "/icon-192x192.png",

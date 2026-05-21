@@ -1,9 +1,13 @@
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const STATIC_CACHE = `ooo-static-${CACHE_VERSION}`;
 const IMAGE_CACHE = `ooo-images-${CACHE_VERSION}`;
 const API_CACHE = `ooo-api-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
+  '/',
+  '/shows',
+  '/creatives',
+  '/schedule',
   '/my-academy',
   '/offline',
 ];
@@ -36,18 +40,6 @@ self.addEventListener('fetch', (event) => {
   // Skip non-GET and cross-origin (except DO Spaces images)
   if (request.method !== 'GET') return;
   if (url.origin !== self.location.origin && !url.hostname.endsWith('digitaloceanspaces.com')) return;
-
-  // Only intercept requests within the /my-academy scope
-  const inScope =
-    url.pathname.startsWith('/my-academy') ||
-    url.pathname.startsWith('/offline') ||
-    url.pathname.startsWith('/api/') ||
-    request.destination === 'script' ||
-    request.destination === 'style' ||
-    request.destination === 'font' ||
-    request.destination === 'image' ||
-    url.hostname.endsWith('digitaloceanspaces.com');
-  if (!inScope) return;
 
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(networkFirst(request, API_CACHE));
@@ -107,7 +99,7 @@ async function networkFirst(request, cacheName) {
 }
 
 self.addEventListener('push', (event) => {
-  const data = event.data?.json() ?? { title: 'OOO Academy', body: 'New update available' };
+  const data = event.data?.json() ?? { title: 'OOO Creatives', body: 'New update available' };
   event.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
@@ -120,7 +112,7 @@ self.addEventListener('push', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const url = event.notification.data?.url ?? '/my-academy';
+  const url = event.notification.data?.url ?? '/';
   event.waitUntil(
     clients.matchAll({ type: 'window' }).then((windowClients) => {
       for (const client of windowClients) {
