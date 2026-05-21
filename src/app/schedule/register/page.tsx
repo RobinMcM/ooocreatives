@@ -45,8 +45,8 @@ export default async function RegisterPage({
                   {time && <span>{time}</span>}
                 </p>
               )}
-              {course.durationMinutes && (
-                <p className="text-xs text-ooo-muted mt-0.5">{course.durationMinutes} mins</p>
+              {(course.duration || course.durationMinutes) && (
+                <p className="text-xs text-ooo-muted mt-0.5">{course.duration ?? `${course.durationMinutes} mins`}</p>
               )}
               {course.location && (
                 <p className="text-xs text-ooo-muted mt-0.5">{course.location}</p>

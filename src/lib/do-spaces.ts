@@ -101,6 +101,7 @@ export interface CourseTemplate {
   title: string;
   photoUrl: string;
   description: string;
+  duration?: string;
   durationMinutes?: number;
   location?: string;
   locationUrl?: string;
@@ -112,6 +113,7 @@ export interface CourseInstance {
   courseId: string;
   date?: string;
   time?: string;
+  duration?: string;
   durationMinutes?: number;
   createdAt: string;
 }
@@ -191,6 +193,7 @@ export interface Lesson {
   description: string;
   date?: string;
   time?: string;
+  duration?: string;
   durationMinutes?: number;
   location?: string;
   locationUrl?: string;

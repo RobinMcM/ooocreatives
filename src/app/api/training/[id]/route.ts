@@ -14,10 +14,10 @@ export async function PUT(
   if (!instance) return NextResponse.json({ error: "Course instance not found" }, { status: 404 });
 
   const body = await request.json();
-  const updates: Partial<{ date: string; time: string; durationMinutes: number }> = {};
+  const updates: Partial<{ date: string; time: string; duration: string }> = {};
   if ("date" in body) updates.date = body.date || "";
   if ("time" in body) updates.time = body.time || "";
-  if ("durationMinutes" in body) updates.durationMinutes = body.durationMinutes ? Number(body.durationMinutes) : undefined;
+  if ("duration" in body) updates.duration = body.duration ? String(body.duration) : undefined;
 
   const updated = await updateCourseInstance(id, updates);
   if (!updated) return NextResponse.json({ error: "Failed to update instance" }, { status: 500 });

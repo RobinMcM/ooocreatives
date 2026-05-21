@@ -36,8 +36,8 @@ export default async function CoursePage({
         >
           Register
         </Link>
-        {course.durationMinutes && (
-          <p className="text-ooo-muted">{course.durationMinutes} mins</p>
+        {(course.duration || course.durationMinutes) && (
+          <p className="text-ooo-muted">{course.duration ?? `${course.durationMinutes} mins`}</p>
         )}
       </div>
 

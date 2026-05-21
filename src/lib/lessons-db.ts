@@ -18,7 +18,7 @@ export async function createLesson(
   description: string,
   date?: string,
   time?: string,
-  durationMinutes?: number,
+  duration?: string,
   location?: string,
   locationUrl?: string
 ): Promise<Lesson> {
@@ -30,7 +30,7 @@ export async function createLesson(
     description,
     ...(date ? { date } : {}),
     ...(time ? { time } : {}),
-    ...(durationMinutes != null ? { durationMinutes } : {}),
+    ...(duration ? { duration } : {}),
     ...(location ? { location } : {}),
     ...(locationUrl ? { locationUrl } : {}),
     createdAt: new Date().toISOString(),
@@ -42,7 +42,7 @@ export async function createLesson(
 
 export async function updateLesson(
   id: string,
-  updates: Partial<Pick<Lesson, "title" | "photoUrl" | "description" | "date" | "time" | "durationMinutes" | "location" | "locationUrl">>
+  updates: Partial<Pick<Lesson, "title" | "photoUrl" | "description" | "date" | "time" | "duration" | "location" | "locationUrl">>
 ): Promise<Lesson | null> {
   const lessons = await getLessonsMetadata();
   const idx = lessons.findIndex((l) => l.id === id);

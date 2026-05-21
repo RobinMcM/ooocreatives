@@ -28,14 +28,14 @@ export async function PUT(
   const title = formData.get("title") as string | null;
   const file = formData.get("photo") as File | null;
   const description = formData.get("description") as string | null;
-  const durationRaw = formData.get("durationMinutes") as string | null;
+  const durationRaw = formData.get("duration") as string | null;
   const location = formData.get("location") as string | null;
   const locationUrl = formData.get("locationUrl") as string | null;
 
   const updates: Parameters<typeof updateCourseTemplate>[1] = {};
   if (title) updates.title = title;
   if (description !== null) updates.description = description;
-  if (durationRaw !== null) updates.durationMinutes = durationRaw ? parseInt(durationRaw, 10) : undefined;
+  if (durationRaw !== null) updates.duration = durationRaw?.trim() || undefined;
   if (location !== null) updates.location = location || undefined;
   if (locationUrl !== null) updates.locationUrl = locationUrl || undefined;
   if (file && file.size > 0) {

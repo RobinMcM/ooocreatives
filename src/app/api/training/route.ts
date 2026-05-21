@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { courseId, date, time, durationMinutes } = body;
+    const { courseId, date, time, duration } = body;
 
     if (!courseId) {
       return NextResponse.json({ error: "courseId is required" }, { status: 400 });
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       courseId,
       date || undefined,
       time || undefined,
-      durationMinutes ? Number(durationMinutes) : undefined
+      duration ? String(duration) : undefined
     );
 
     return NextResponse.json(instance, { status: 201 });

@@ -18,6 +18,7 @@ interface Course {
   title: string;
   photoUrl: string;
   description: string;
+  duration?: string;
   durationMinutes?: number;
   location?: string;
   locationUrl?: string;
@@ -95,8 +96,8 @@ export default function Courses() {
                   <h2 className="font-display text-xl font-semibold text-ooo-cream group-hover:text-ooo-accent transition-colors">
                     {course.title}
                   </h2>
-                  {course.durationMinutes && (
-                    <p className="text-xs text-ooo-muted mt-1">{course.durationMinutes} mins</p>
+                  {(course.duration || course.durationMinutes) && (
+                    <p className="text-xs text-ooo-muted mt-1">{course.duration ?? `${course.durationMinutes} mins`}</p>
                   )}
                   {course.location && (
                     <p className="text-xs text-ooo-muted mt-0.5">{course.location}</p>

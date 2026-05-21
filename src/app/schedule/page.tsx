@@ -20,6 +20,7 @@ interface ScheduleCard {
   photoUrl: string;
   date?: string;
   time?: string;
+  duration?: string;
   durationMinutes?: number;
   location?: string;
 }
@@ -250,8 +251,8 @@ export default function SchedulePage() {
                     {card.time && <span>{card.time}</span>}
                   </p>
                 )}
-                {card.durationMinutes && (
-                  <p className="text-xs text-ooo-muted mt-0.5">{card.durationMinutes} mins</p>
+                {(card.duration || card.durationMinutes) && (
+                  <p className="text-xs text-ooo-muted mt-0.5">{card.duration ?? `${card.durationMinutes} mins`}</p>
                 )}
                 {card.location && (
                   <p className="text-xs text-ooo-muted mt-0.5">{card.location}</p>

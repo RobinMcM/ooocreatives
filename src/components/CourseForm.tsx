@@ -66,7 +66,7 @@ export function CourseForm({ course }: { course?: CourseTemplate }) {
   const [title, setTitle] = useState(course?.title ?? "");
   const [photo, setPhoto] = useState<File | null>(null);
   const [description, setDescription] = useState(course?.description ?? "");
-  const [durationMinutes, setDurationMinutes] = useState(course?.durationMinutes?.toString() ?? "");
+  const [duration, setDuration] = useState(course?.duration ?? (course?.durationMinutes ? `${course.durationMinutes} mins` : ""));
   const [location, setLocation] = useState(course?.location ?? "");
   const [locationUrl, setLocationUrl] = useState(course?.locationUrl ?? "");
   const [saving, setSaving] = useState(false);
@@ -83,7 +83,7 @@ export function CourseForm({ course }: { course?: CourseTemplate }) {
       const fd = new FormData();
       fd.append("title", title);
       fd.append("description", description);
-      fd.append("durationMinutes", durationMinutes);
+      fd.append("duration", duration);
       fd.append("location", location);
       fd.append("locationUrl", locationUrl);
       if (photo) fd.append("photo", photo);
@@ -130,14 +130,13 @@ export function CourseForm({ course }: { course?: CourseTemplate }) {
           />
         </div>
 
-        <div className="w-full sm:w-48">
-          <label className="block text-ooo-muted text-sm font-medium mb-2">Duration <span className="text-ooo-muted/50 font-normal">(mins, optional)</span></label>
+        <div className="w-full sm:w-64">
+          <label className="block text-ooo-muted text-sm font-medium mb-2">Duration <span className="text-ooo-muted/50 font-normal">(optional)</span></label>
           <input
-            type="number"
-            min="1"
-            value={durationMinutes}
-            onChange={(e) => setDurationMinutes(e.target.value)}
-            placeholder="e.g. 90"
+            type="text"
+            value={duration}
+            onChange={(e) => setDuration(e.target.value)}
+            placeholder="e.g. 2 Hours, 8 Weeks, 3 Months"
             className="w-full px-4 py-2 bg-ooo-black border border-ooo-ink rounded-lg text-ooo-cream placeholder-ooo-muted focus:outline-none focus:border-ooo-accent"
           />
         </div>

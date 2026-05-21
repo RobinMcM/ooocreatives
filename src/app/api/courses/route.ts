@@ -21,8 +21,7 @@ export async function POST(request: NextRequest) {
     const title = formData.get("title") as string;
     const file = formData.get("photo") as File;
     const description = (formData.get("description") as string) ?? "";
-    const durationRaw = formData.get("durationMinutes") as string | null;
-    const durationMinutes = durationRaw ? parseInt(durationRaw, 10) : undefined;
+    const duration = (formData.get("duration") as string)?.trim() || undefined;
     const location = (formData.get("location") as string) || undefined;
     const locationUrl = (formData.get("locationUrl") as string) || undefined;
 
@@ -32,7 +31,7 @@ export async function POST(request: NextRequest) {
 
     const buffer = await file.arrayBuffer();
     const photoUrl = await uploadCourseTemplatePhoto(Buffer.from(buffer), file.name, file.type);
-    const course = await createCourseTemplate(title, photoUrl, description, durationMinutes, location, locationUrl);
+    const course = await createCourseTemplate(title, photoUrl, description, duration, location, locationUrl);
 
     return NextResponse.json(course, { status: 201 });
   } catch {

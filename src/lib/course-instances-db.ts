@@ -16,7 +16,7 @@ export async function createCourseInstance(
   courseId: string,
   date?: string,
   time?: string,
-  durationMinutes?: number
+  duration?: string
 ): Promise<CourseInstance> {
   const instances = await getCourseInstancesMetadata();
   const newInstance: CourseInstance = {
@@ -24,7 +24,7 @@ export async function createCourseInstance(
     courseId,
     ...(date ? { date } : {}),
     ...(time ? { time } : {}),
-    ...(durationMinutes != null ? { durationMinutes } : {}),
+    ...(duration ? { duration } : {}),
     createdAt: new Date().toISOString(),
   };
   await saveCourseInstancesMetadata([...instances, newInstance]);
@@ -33,7 +33,7 @@ export async function createCourseInstance(
 
 export async function updateCourseInstance(
   id: string,
-  updates: Partial<Pick<CourseInstance, "date" | "time" | "durationMinutes">>
+  updates: Partial<Pick<CourseInstance, "date" | "time" | "duration">>
 ): Promise<CourseInstance | null> {
   const instances = await getCourseInstancesMetadata();
   const idx = instances.findIndex((i) => i.id === id);
