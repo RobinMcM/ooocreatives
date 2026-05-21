@@ -44,6 +44,13 @@ export function ShowSection({ showId, section, title, addLabel, emptyLabel }: Sh
   const [members, setMembers] = useState<SectionMember[]>([]);
   const [actors, setActors] = useState<Actor[]>([]);
   const [linkingId, setLinkingId] = useState<string | null>(null);
+  const [pickerMode, setPickerMode] = useState<"choose" | "create">("choose");
+  const [createName, setCreateName] = useState("");
+  const [createTitle, setCreateTitle] = useState("");
+  const [createBio, setCreateBio] = useState("");
+  const [createPhoto, setCreatePhoto] = useState<File | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
 
@@ -67,6 +74,16 @@ export function ShowSection({ showId, section, title, addLabel, emptyLabel }: Sh
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, [linkingId]);
+
+  const openPicker = (memberId: string) => {
+    setLinkingId(memberId);
+    setPickerMode("choose");
+    setCreateName("");
+    setCreateTitle("");
+    setCreateBio("");
+    setCreatePhoto(null);
+    setCreateError(null);
+  };
 
   const handleDelete = async (memberId: string) => {
     if (!confirm(`Remove this ${section === "crew" ? "crew member" : "team member"} from the show?`)) return;
@@ -95,6 +112,33 @@ export function ShowSection({ showId, section, title, addLabel, emptyLabel }: Sh
       setLinkingId(null);
     } catch {
       setError("Failed to link actor.");
+    }
+  };
+
+  const handleCreateAndLink = async (memberId: string) => {
+    if (!createName.trim()) { setCreateError("Name is required."); return; }
+    if (!createPhoto) { setCreateError("Photo is required."); return; }
+    setCreating(true);
+    setCreateError(null);
+    try {
+      const fd = new FormData();
+      fd.append("name", createName.trim());
+      fd.append("photo", createPhoto);
+      if (createTitle.trim()) fd.append("title", createTitle.trim());
+      if (createBio.trim()) fd.append("bio", createBio.trim());
+      const headers = await authHeaders();
+      const res = await fetch("/api/creatives", { method: "POST", headers, body: fd });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error ?? "Failed to create actor");
+      }
+      const newActor: Actor = await res.json();
+      setActors((prev) => [...prev, newActor]);
+      await handleLinkActor(memberId, newActor.id);
+    } catch (err) {
+      setCreateError(err instanceof Error ? err.message : "Failed to create actor.");
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -189,29 +233,100 @@ export function ShowSection({ showId, section, title, addLabel, emptyLabel }: Sh
                       <div className="relative mt-1" ref={isPickerOpen ? pickerRef : undefined}>
                         <button
                           type="button"
-                          onClick={() => setLinkingId(isPickerOpen ? null : member.id)}
+                          onClick={() => isPickerOpen ? setLinkingId(null) : openPicker(member.id)}
                           className="text-xs text-ooo-accent hover:text-ooo-accent/80 transition-colors font-medium"
                         >
                           {isPickerOpen ? "Cancel" : "Link Creative"}
                         </button>
                         {isPickerOpen && (
-                          <div className="absolute left-0 top-6 z-20 w-48 max-h-48 overflow-y-auto rounded-lg border border-ooo-slate bg-ooo-ink shadow-xl">
-                            {actors.length === 0 ? (
-                              <p className="px-3 py-2 text-xs text-ooo-muted">No creatives registered yet.</p>
+                          <div className={`absolute left-0 top-6 z-20 rounded-lg border border-ooo-slate bg-ooo-ink shadow-xl ${pickerMode === "create" ? "w-64" : "w-48 max-h-64 overflow-y-auto"}`}>
+                            {/* Tab bar */}
+                            <div className="flex border-b border-ooo-slate/60">
+                              <button
+                                type="button"
+                                onClick={() => setPickerMode("choose")}
+                                className={`flex-1 px-3 py-2 text-xs font-medium transition-colors ${pickerMode === "choose" ? "text-ooo-accent border-b-2 border-ooo-accent -mb-px" : "text-ooo-muted hover:text-ooo-cream"}`}
+                              >
+                                Choose
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => { setPickerMode("create"); setCreateError(null); }}
+                                className={`flex-1 px-3 py-2 text-xs font-medium transition-colors ${pickerMode === "create" ? "text-ooo-accent border-b-2 border-ooo-accent -mb-px" : "text-ooo-muted hover:text-ooo-cream"}`}
+                              >
+                                Create
+                              </button>
+                            </div>
+
+                            {pickerMode === "choose" ? (
+                              actors.length === 0 ? (
+                                <p className="px-3 py-2 text-xs text-ooo-muted">No creatives registered yet.</p>
+                              ) : (
+                                actors.map((a) => (
+                                  <button
+                                    key={a.id}
+                                    type="button"
+                                    onClick={() => handleLinkActor(member.id, a.id)}
+                                    className="w-full text-left px-3 py-2 text-sm text-ooo-cream hover:bg-ooo-slate transition-colors flex items-center gap-2"
+                                  >
+                                    <div className="relative w-6 h-6 rounded-full overflow-hidden shrink-0 bg-ooo-slate">
+                                      <Image src={a.photoUrl} alt={a.name} fill className="object-cover" />
+                                    </div>
+                                    {a.name}
+                                  </button>
+                                ))
+                              )
                             ) : (
-                              actors.map((a) => (
+                              <div className="p-3 space-y-2">
+                                <div>
+                                  <label className="block text-xs text-ooo-muted mb-1">Name <span className="text-red-400">*</span></label>
+                                  <input
+                                    type="text"
+                                    value={createName}
+                                    onChange={(e) => setCreateName(e.target.value)}
+                                    placeholder="Full name"
+                                    className="w-full px-2 py-1.5 text-xs rounded bg-ooo-slate/40 border border-ooo-slate text-ooo-cream placeholder:text-ooo-muted focus:outline-none focus:ring-1 focus:ring-ooo-accent"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-xs text-ooo-muted mb-1">Photo <span className="text-red-400">*</span></label>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => setCreatePhoto(e.target.files?.[0] ?? null)}
+                                    className="w-full text-xs text-ooo-muted file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:font-medium file:bg-ooo-accent file:text-ooo-ink hover:file:bg-ooo-accent/90"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-xs text-ooo-muted mb-1">Title <span className="text-ooo-muted/50">(optional)</span></label>
+                                  <input
+                                    type="text"
+                                    value={createTitle}
+                                    onChange={(e) => setCreateTitle(e.target.value)}
+                                    placeholder="e.g. Actor, Director"
+                                    className="w-full px-2 py-1.5 text-xs rounded bg-ooo-slate/40 border border-ooo-slate text-ooo-cream placeholder:text-ooo-muted focus:outline-none focus:ring-1 focus:ring-ooo-accent"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-xs text-ooo-muted mb-1">Bio <span className="text-ooo-muted/50">(optional)</span></label>
+                                  <textarea
+                                    value={createBio}
+                                    onChange={(e) => setCreateBio(e.target.value)}
+                                    placeholder="Short biography…"
+                                    rows={2}
+                                    className="w-full px-2 py-1.5 text-xs rounded bg-ooo-slate/40 border border-ooo-slate text-ooo-cream placeholder:text-ooo-muted focus:outline-none focus:ring-1 focus:ring-ooo-accent resize-none"
+                                  />
+                                </div>
+                                {createError && <p className="text-xs text-red-400">{createError}</p>}
                                 <button
-                                  key={a.id}
                                   type="button"
-                                  onClick={() => handleLinkActor(member.id, a.id)}
-                                  className="w-full text-left px-3 py-2 text-sm text-ooo-cream hover:bg-ooo-slate transition-colors flex items-center gap-2"
+                                  onClick={() => handleCreateAndLink(member.id)}
+                                  disabled={creating}
+                                  className="w-full py-1.5 rounded bg-ooo-accent text-ooo-ink text-xs font-semibold hover:bg-ooo-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                  <div className="relative w-6 h-6 rounded-full overflow-hidden shrink-0 bg-ooo-slate">
-                                    <Image src={a.photoUrl} alt={a.name} fill className="object-cover" />
-                                  </div>
-                                  {a.name}
+                                  {creating ? "Saving…" : "Save & Link"}
                                 </button>
-                              ))
+                              </div>
                             )}
                           </div>
                         )}
