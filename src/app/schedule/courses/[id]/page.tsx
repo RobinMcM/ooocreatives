@@ -35,7 +35,7 @@ export default async function CoursePage({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
         {/* Image */}
         <div className="relative w-full rounded-xl overflow-hidden bg-ooo-slate" style={{ aspectRatio: "1024/1792" }}>
-          <Image src={course.photoUrl} alt={course.title} fill className="object-cover" priority />
+          <Image src={course.photoUrl} alt={course.title} fill className="object-contain" priority />
         </div>
 
         {/* Pricing & registration */}
