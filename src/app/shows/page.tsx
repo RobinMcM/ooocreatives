@@ -23,6 +23,8 @@ interface ShowItem {
   linkLabel?: string;
   startDate?: string;
   endDate?: string;
+  createdByUserId?: string;
+  publishedToOurShows?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -65,7 +67,8 @@ export default function OurShows() {
       const response = await fetch("/api/shows");
       if (!response.ok) throw new Error("Failed to fetch shows");
       const data = await response.json();
-      setItems(data.sort((a: ShowItem, b: ShowItem) => a.order - b.order));
+      const published = data.filter((s: ShowItem) => s.publishedToOurShows !== false);
+      setItems(published.sort((a: ShowItem, b: ShowItem) => a.order - b.order));
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");

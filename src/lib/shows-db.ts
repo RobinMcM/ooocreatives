@@ -21,7 +21,8 @@ export async function createShow(
   linkUrl?: string,
   linkLabel?: string,
   startDate?: string,
-  endDate?: string
+  endDate?: string,
+  publishedToOurShows: boolean = true
 ): Promise<ShowItem> {
   const items = await getShowsMetadata();
   const newItem: ShowItem = {
@@ -35,6 +36,7 @@ export async function createShow(
     ...(startDate ? { startDate } : {}),
     ...(endDate ? { endDate } : {}),
     createdByUserId,
+    publishedToOurShows,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -44,7 +46,7 @@ export async function createShow(
 
 export async function updateShow(
   id: string,
-  updates: Partial<Pick<ShowItem, "title" | "imageUrl" | "order" | "featuredOnHomepage" | "linkUrl" | "linkLabel" | "startDate" | "endDate">>
+  updates: Partial<Pick<ShowItem, "title" | "imageUrl" | "order" | "featuredOnHomepage" | "linkUrl" | "linkLabel" | "startDate" | "endDate" | "publishedToOurShows">>
 ): Promise<ShowItem | null> {
   const items = await getShowsMetadata();
   const idx = items.findIndex((item) => item.id === id);

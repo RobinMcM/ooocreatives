@@ -39,6 +39,7 @@ export async function PUT(
     const featuredOnHomepageStr = formData.get("featuredOnHomepage") as string | null;
     const startDate = formData.get("startDate") as string | null;
     const endDate = formData.get("endDate") as string | null;
+    const publishedToOurShowsStr = formData.get("publishedToOurShows") as string | null;
 
     const updates: any = {};
     if (title) updates.title = title;
@@ -48,6 +49,7 @@ export async function PUT(
     if (featuredOnHomepageStr !== null) updates.featuredOnHomepage = featuredOnHomepageStr === "true";
     if (startDate !== null) updates.startDate = startDate || undefined;
     if (endDate !== null) updates.endDate = endDate || undefined;
+    if (publishedToOurShowsStr !== null) updates.publishedToOurShows = publishedToOurShowsStr === "true";
 
     if (file && file.size > 0) {
       try {

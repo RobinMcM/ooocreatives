@@ -26,6 +26,7 @@ interface ShowItem {
   startDate?: string;
   endDate?: string;
   createdByUserId?: string;
+  publishedToOurShows?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -173,6 +174,9 @@ export default function MyShowsPage() {
                     {item.title}
                   </h2>
                   <ShowDates startDate={item.startDate} endDate={item.endDate} />
+                  <span className={`mt-2 inline-block text-xs font-medium px-2 py-0.5 rounded-full ${item.publishedToOurShows !== false ? "bg-green-900/40 text-green-400" : "bg-ooo-slate text-ooo-muted"}`}>
+                    {item.publishedToOurShows !== false ? "Listed on Our Shows" : "Not listed"}
+                  </span>
                 </div>
               </Link>
 

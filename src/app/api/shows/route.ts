@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
     const featuredOnHomepage = formData.get("featuredOnHomepage") === "true";
     const startDate = (formData.get("startDate") as string) || undefined;
     const endDate = (formData.get("endDate") as string) || undefined;
+    const publishedToOurShows = formData.get("publishedToOurShows") !== "false";
 
     if (!title || !file) {
       return NextResponse.json(
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
 
     const buffer = await file.arrayBuffer();
     const imageUrl = await uploadShowImage(Buffer.from(buffer), file.name, file.type);
-    const item = await createShow(title, imageUrl, session.userId, featuredOnHomepage, linkUrl, linkLabel, startDate, endDate);
+    const item = await createShow(title, imageUrl, session.userId, featuredOnHomepage, linkUrl, linkLabel, startDate, endDate, publishedToOurShows);
 
     return NextResponse.json(item, { status: 201 });
   } catch (error) {

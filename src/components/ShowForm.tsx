@@ -23,6 +23,7 @@ export function ShowForm({ show, redirectTo = "/shows" }: { show?: ShowItem; red
   const [linkUrl, setLinkUrl] = useState(show?.linkUrl ?? "");
   const [linkLabel, setLinkLabel] = useState(show?.linkLabel ?? "");
   const [featuredOnHomepage, setFeaturedOnHomepage] = useState(show?.featuredOnHomepage !== false);
+  const [publishedToOurShows, setPublishedToOurShows] = useState(show?.publishedToOurShows !== false);
   const [startDate, setStartDate] = useState(show?.startDate ?? "");
   const [endDate, setEndDate] = useState(show?.endDate ?? "");
   const [saving, setSaving] = useState(false);
@@ -44,6 +45,7 @@ export function ShowForm({ show, redirectTo = "/shows" }: { show?: ShowItem; red
       fd.append("linkUrl", linkUrl);
       fd.append("linkLabel", linkLabel);
       fd.append("featuredOnHomepage", String(featuredOnHomepage));
+      fd.append("publishedToOurShows", String(publishedToOurShows));
       fd.append("startDate", startDate);
       fd.append("endDate", endDate);
 
@@ -102,6 +104,19 @@ export function ShowForm({ show, redirectTo = "/shows" }: { show?: ShowItem; red
             <span className="text-sm font-medium text-ooo-cream">Display on homepage</span>
           </label>
           <p className="mt-1 ml-7 text-xs text-ooo-muted">Show this in the featured carousel on the homepage.</p>
+        </div>
+
+        <div>
+          <label className="inline-flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={publishedToOurShows}
+              onChange={(e) => setPublishedToOurShows(e.target.checked)}
+              className="w-4 h-4 rounded border-ooo-ink accent-ooo-accent"
+            />
+            <span className="text-sm font-medium text-ooo-cream">Display on Our Shows</span>
+          </label>
+          <p className="mt-1 ml-7 text-xs text-ooo-muted">List this show on the public Our Shows page.</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
