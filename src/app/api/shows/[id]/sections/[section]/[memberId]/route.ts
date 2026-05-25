@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionForValidation } from "@/lib/supertokens/server";
+import { getUserRole } from "@/lib/movieshaker-db";
+import { getShow } from "@/lib/shows-db";
 import { updateMember, deleteMember } from "@/lib/show-sections-db";
 
 const ALLOWED = ["crew", "team"];
+const ADMIN_ROLES = ["admin", "Admin"];
+
+async function canManageShow(userId: string, showId: string): Promise<boolean> {
+  const [role, show] = await Promise.all([getUserRole(userId), getShow(showId)]);
+  if (!show) return false;
+  return ADMIN_ROLES.includes(role ?? "") || role === "Super User" || show.createdByUserId === userId;
+}
 
 export async function PUT(
   request: NextRequest,
@@ -13,6 +22,10 @@ export async function PUT(
 
   const { id, section, memberId } = await params;
   if (!ALLOWED.includes(section)) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  if (!await canManageShow(session.userId, id)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   const body = await request.json();
   const updates: { roleName?: string; actorId?: string } = {};
@@ -33,6 +46,10 @@ export async function DELETE(
 
   const { id, section, memberId } = await params;
   if (!ALLOWED.includes(section)) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  if (!await canManageShow(session.userId, id)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   const ok = await deleteMember(id, section, memberId);
   if (!ok) return NextResponse.json({ error: "Not found" }, { status: 404 });

@@ -66,6 +66,7 @@ export interface ShowItem {
   linkLabel?: string;
   startDate?: string;
   endDate?: string;
+  createdByUserId?: string;
   createdAt: string;
   updatedAt: string;
 }

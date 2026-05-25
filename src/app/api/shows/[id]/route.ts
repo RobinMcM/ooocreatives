@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionForValidation } from "@/lib/supertokens/server";
+import { getUserRole } from "@/lib/movieshaker-db";
 import { getShow, updateShow, deleteShow } from "@/lib/shows-db";
 import { deleteShowImage, uploadShowImage } from "@/lib/do-spaces";
+
+const ADMIN_ROLES = ["admin", "Admin"];
 
 export async function PUT(
   request: NextRequest,
@@ -18,6 +21,13 @@ export async function PUT(
 
     if (!item) {
       return NextResponse.json({ error: "Show not found" }, { status: 404 });
+    }
+
+    const role = await getUserRole(session.userId);
+    const isAdmin = ADMIN_ROLES.includes(role ?? "");
+    const isOwner = item.createdByUserId === session.userId;
+    if (!isAdmin && !isOwner) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const formData = await request.formData();
@@ -79,6 +89,13 @@ export async function DELETE(
 
     if (!item) {
       return NextResponse.json({ error: "Show not found" }, { status: 404 });
+    }
+
+    const role = await getUserRole(session.userId);
+    const isAdmin = ADMIN_ROLES.includes(role ?? "");
+    const isOwner = item.createdByUserId === session.userId;
+    if (!isAdmin && !isOwner) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     try {

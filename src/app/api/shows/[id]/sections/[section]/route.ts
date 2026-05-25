@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionForValidation } from "@/lib/supertokens/server";
+import { getUserRole } from "@/lib/movieshaker-db";
+import { getShow } from "@/lib/shows-db";
 import { getMembers, createMember } from "@/lib/show-sections-db";
 
 const ALLOWED = ["crew", "team"];
+const ADMIN_ROLES = ["admin", "Admin"];
 
 export async function GET(
   _request: NextRequest,
@@ -23,6 +26,15 @@ export async function POST(
 
   const { id, section } = await params;
   if (!ALLOWED.includes(section)) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  const [role, show] = await Promise.all([getUserRole(session.userId), getShow(id)]);
+  if (!show) return NextResponse.json({ error: "Show not found" }, { status: 404 });
+  const isAdmin = ADMIN_ROLES.includes(role ?? "");
+  const isSuperUser = role === "Super User";
+  const isOwner = show.createdByUserId === session.userId;
+  if (!isAdmin && !isSuperUser && !isOwner) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   const body = await request.json();
   const { roleName } = body;

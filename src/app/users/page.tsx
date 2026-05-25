@@ -16,7 +16,7 @@ interface User {
   role: string | null;
 }
 
-const ASSIGNABLE_ROLES = ["User", "Super User"];
+const ASSIGNABLE_ROLES = ["User", "Creative", "Super User"];
 
 export default function UsersPage() {
   const router = useRouter();

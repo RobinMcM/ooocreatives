@@ -3,7 +3,7 @@ import { getSessionForValidation } from "@/lib/supertokens/server";
 import { getUserRole, upsertUserRole } from "@/lib/movieshaker-db";
 
 const ADMIN_ROLES = ["admin", "Admin"];
-const ASSIGNABLE_ROLES = ["User", "Super User"];
+const ASSIGNABLE_ROLES = ["User", "Creative", "Super User"];
 
 export async function PUT(
   request: NextRequest,

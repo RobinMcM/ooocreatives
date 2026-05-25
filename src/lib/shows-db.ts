@@ -16,6 +16,7 @@ export async function getShow(id: string): Promise<ShowItem | null> {
 export async function createShow(
   title: string,
   imageUrl: string,
+  createdByUserId: string,
   featuredOnHomepage: boolean = true,
   linkUrl?: string,
   linkLabel?: string,
@@ -33,6 +34,7 @@ export async function createShow(
     ...(linkLabel ? { linkLabel } : {}),
     ...(startDate ? { startDate } : {}),
     ...(endDate ? { endDate } : {}),
+    createdByUserId,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };

@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionForValidation } from "@/lib/supertokens/server";
+import { getUserRole } from "@/lib/movieshaker-db";
 import { getShows, createShow } from "@/lib/shows-db";
 import { uploadShowImage } from "@/lib/do-spaces";
+
+const ALLOWED_CREATE_ROLES = ["Creative", "admin", "Admin"];
 
 export async function GET() {
   try {
@@ -25,6 +28,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const role = await getUserRole(session.userId);
+    if (!role || !ALLOWED_CREATE_ROLES.includes(role)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const formData = await request.formData();
     const title = formData.get("title") as string;
     const file = formData.get("image") as File;
@@ -43,7 +51,7 @@ export async function POST(request: NextRequest) {
 
     const buffer = await file.arrayBuffer();
     const imageUrl = await uploadShowImage(Buffer.from(buffer), file.name, file.type);
-    const item = await createShow(title, imageUrl, featuredOnHomepage, linkUrl, linkLabel, startDate, endDate);
+    const item = await createShow(title, imageUrl, session.userId, featuredOnHomepage, linkUrl, linkLabel, startDate, endDate);
 
     return NextResponse.json(item, { status: 201 });
   } catch (error) {
