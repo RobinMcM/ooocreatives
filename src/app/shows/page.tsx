@@ -24,6 +24,7 @@ interface ShowItem {
   startDate?: string;
   endDate?: string;
   createdByUserId?: string;
+  creatorName?: string;
   publishedToOurShows?: boolean;
   createdAt: string;
   updatedAt: string;
@@ -144,6 +145,15 @@ export default function OurShows() {
                   <ShowDates startDate={item.startDate} endDate={item.endDate} />
                 </div>
               </Link>
+
+              {item.creatorName && (
+                <div className="px-4 py-2 border-t border-ooo-ink/60 flex items-center gap-1.5">
+                  <svg className="w-3 h-3 text-ooo-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                  </svg>
+                  <p className="text-xs text-ooo-muted truncate">By {item.creatorName}</p>
+                </div>
+              )}
 
               {isAdmin && (
                 <div className="absolute top-2 right-2 flex gap-1">

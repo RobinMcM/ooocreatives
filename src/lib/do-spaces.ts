@@ -67,6 +67,7 @@ export interface ShowItem {
   startDate?: string;
   endDate?: string;
   createdByUserId?: string;
+  creatorName?: string;
   publishedToOurShows?: boolean;
   createdAt: string;
   updatedAt: string;

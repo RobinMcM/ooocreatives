@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSessionForValidation } from "@/lib/supertokens/server";
 import { getUserRole } from "@/lib/movieshaker-db";
 import { getShows, createShow } from "@/lib/shows-db";
+import { getUserProfile } from "@/lib/movieshaker-db";
 import { uploadShowImage } from "@/lib/do-spaces";
 
 const ALLOWED_CREATE_ROLES = ["Creative", "admin", "Admin"];
@@ -50,9 +51,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const profile = await getUserProfile(session.userId);
+    const creatorName = profile?.name ?? undefined;
+
     const buffer = await file.arrayBuffer();
     const imageUrl = await uploadShowImage(Buffer.from(buffer), file.name, file.type);
-    const item = await createShow(title, imageUrl, session.userId, featuredOnHomepage, linkUrl, linkLabel, startDate, endDate, publishedToOurShows);
+    const item = await createShow(title, imageUrl, session.userId, featuredOnHomepage, linkUrl, linkLabel, startDate, endDate, publishedToOurShows, creatorName);
 
     return NextResponse.json(item, { status: 201 });
   } catch (error) {

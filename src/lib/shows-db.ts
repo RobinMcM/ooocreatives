@@ -22,7 +22,8 @@ export async function createShow(
   linkLabel?: string,
   startDate?: string,
   endDate?: string,
-  publishedToOurShows: boolean = true
+  publishedToOurShows: boolean = true,
+  creatorName?: string
 ): Promise<ShowItem> {
   const items = await getShowsMetadata();
   const newItem: ShowItem = {
@@ -36,6 +37,7 @@ export async function createShow(
     ...(startDate ? { startDate } : {}),
     ...(endDate ? { endDate } : {}),
     createdByUserId,
+    ...(creatorName ? { creatorName } : {}),
     publishedToOurShows,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
