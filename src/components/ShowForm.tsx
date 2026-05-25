@@ -14,7 +14,7 @@ function calcDays(start: string, end: string): number {
   return Math.max(1, Math.round((new Date(end).getTime() - new Date(start).getTime()) / 86400000) + 1);
 }
 
-export function ShowForm({ show }: { show?: ShowItem }) {
+export function ShowForm({ show, redirectTo = "/shows" }: { show?: ShowItem; redirectTo?: string }) {
   const router = useRouter();
   const isEditing = !!show;
 
@@ -59,7 +59,7 @@ export function ShowForm({ show }: { show?: ShowItem }) {
         throw new Error(response.status === 401 ? "Unauthorized" : (body.error ?? "Failed to save show"));
       }
 
-      router.push("/shows");
+      router.push(redirectTo);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
       setSaving(false);
@@ -185,7 +185,7 @@ export function ShowForm({ show }: { show?: ShowItem }) {
           </button>
           <button
             type="button"
-            onClick={() => router.push("/shows")}
+            onClick={() => router.push(redirectTo)}
             className="px-6 py-2 bg-ooo-ink text-ooo-cream rounded-lg font-semibold hover:bg-ooo-ink/80 transition-colors"
           >
             Cancel

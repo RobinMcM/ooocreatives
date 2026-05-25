@@ -10,6 +10,7 @@ import { useUserRoles } from "@/lib/useUserRoles";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const ADMIN_ROLES = ["admin", "Admin"];
+const CREATIVE_ROLES = ["Creative"];
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -27,6 +28,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const displayName = useUserDisplayName();
   const { roles } = useUserRoles();
   const isAdmin = roles.some((r) => ADMIN_ROLES.includes(r));
+  const isCreative = roles.some((r) => CREATIVE_ROLES.includes(r));
   const pathname = usePathname();
   const authMenuRef = useRef<HTMLDivElement>(null);
 
@@ -166,6 +168,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
                         </svg>
                         My Academy
                       </Link>
+                      {(isCreative || isAdmin) && (
+                        <Link
+                          href="/my-shows"
+                          onClick={() => setAuthMenuOpen(false)}
+                          className="w-full inline-flex items-center gap-2 text-left px-4 py-3 text-sm text-ooo-muted hover:text-ooo-cream hover:bg-ooo-slate/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ooo-accent"
+                          role="menuitem"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"
+                            />
+                          </svg>
+                          My Shows
+                        </Link>
+                      )}
                       {isAdmin && (
                         <Link
                           href="/users"

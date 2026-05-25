@@ -4,13 +4,16 @@ import { ShowForm } from "@/components/ShowForm";
 
 export default async function EditShowPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ back?: string }>;
 }) {
-  const { id } = await params;
+  const [{ id }, { back }] = await Promise.all([params, searchParams]);
   const show = await getShow(id);
 
   if (!show) notFound();
 
-  return <ShowForm show={show} />;
+  const redirectTo = back === "my-shows" ? "/my-shows" : "/shows";
+  return <ShowForm show={show} redirectTo={redirectTo} />;
 }
