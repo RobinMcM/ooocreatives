@@ -12,7 +12,7 @@ export async function PUT(
 ) {
   try {
     const session = await getSessionForValidation();
-    if (!session) {
+    if (!session?.userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -80,7 +80,7 @@ export async function DELETE(
 ) {
   try {
     const session = await getSessionForValidation();
-    if (!session) {
+    if (!session?.userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

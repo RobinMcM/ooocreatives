@@ -17,7 +17,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string; charId: string }> }
 ) {
   const session = await getSessionForValidation();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session?.userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id: showId, charId } = await params;
 
@@ -44,7 +44,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string; charId: string }> }
 ) {
   const session = await getSessionForValidation();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session?.userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id: showId, charId } = await params;
 

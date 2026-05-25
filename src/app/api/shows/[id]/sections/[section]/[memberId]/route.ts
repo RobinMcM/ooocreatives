@@ -18,7 +18,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string; section: string; memberId: string }> }
 ) {
   const session = await getSessionForValidation();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session?.userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id, section, memberId } = await params;
   if (!ALLOWED.includes(section)) return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -42,7 +42,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string; section: string; memberId: string }> }
 ) {
   const session = await getSessionForValidation();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session?.userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id, section, memberId } = await params;
   if (!ALLOWED.includes(section)) return NextResponse.json({ error: "Not found" }, { status: 404 });
