@@ -31,8 +31,13 @@ export async function POST(
   if (!show) return NextResponse.json({ error: "Show not found" }, { status: 404 });
   const isAdmin = ADMIN_ROLES.includes(role ?? "");
   const isSuperUser = role === "Super User";
+  const isCreative = role === "Creative";
   const isOwner = show.createdByUserId === session.userId;
-  if (!isAdmin && !isSuperUser && !isOwner) {
+  // Legacy shows (no createdByUserId) are manageable by any privileged role
+  const canManage = !show.createdByUserId
+    ? (isAdmin || isSuperUser || isCreative)
+    : (isAdmin || isSuperUser || isOwner);
+  if (!canManage) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

@@ -10,7 +10,13 @@ const ADMIN_ROLES = ["admin", "Admin"];
 async function canManageShow(userId: string, showId: string): Promise<boolean> {
   const [role, show] = await Promise.all([getUserRole(userId), getShow(showId)]);
   if (!show) return false;
-  return ADMIN_ROLES.includes(role ?? "") || role === "Super User" || show.createdByUserId === userId;
+  const isAdmin = ADMIN_ROLES.includes(role ?? "");
+  const isSuperUser = role === "Super User";
+  const isCreative = role === "Creative";
+  const isOwner = show.createdByUserId === userId;
+  // Legacy shows (no createdByUserId) are manageable by any privileged role
+  if (!show.createdByUserId) return isAdmin || isSuperUser || isCreative;
+  return isAdmin || isSuperUser || isOwner;
 }
 
 export async function PUT(

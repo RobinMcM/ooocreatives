@@ -25,8 +25,14 @@ export async function PUT(
 
     const role = await getUserRole(session.userId);
     const isAdmin = ADMIN_ROLES.includes(role ?? "");
+    const isSuperUser = role === "Super User";
+    const isCreative = role === "Creative";
     const isOwner = item.createdByUserId === session.userId;
-    if (!isAdmin && !isOwner) {
+    // Legacy shows (no createdByUserId) are manageable by any privileged role
+    const canManage = !item.createdByUserId
+      ? (isAdmin || isSuperUser || isCreative)
+      : (isAdmin || isOwner);
+    if (!canManage) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -95,8 +101,14 @@ export async function DELETE(
 
     const role = await getUserRole(session.userId);
     const isAdmin = ADMIN_ROLES.includes(role ?? "");
+    const isSuperUser = role === "Super User";
+    const isCreative = role === "Creative";
     const isOwner = item.createdByUserId === session.userId;
-    if (!isAdmin && !isOwner) {
+    // Legacy shows (no createdByUserId) are manageable by any privileged role
+    const canManage = !item.createdByUserId
+      ? (isAdmin || isSuperUser || isCreative)
+      : (isAdmin || isOwner);
+    if (!canManage) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
