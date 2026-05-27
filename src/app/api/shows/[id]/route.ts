@@ -31,7 +31,7 @@ export async function PUT(
     // Legacy shows (no createdByUserId) are manageable by any privileged role
     const canManage = !item.createdByUserId
       ? (isAdmin || isSuperUser || isCreative)
-      : (isAdmin || isOwner);
+      : (isAdmin || isSuperUser || isOwner);
     if (!canManage) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
@@ -107,7 +107,7 @@ export async function DELETE(
     // Legacy shows (no createdByUserId) are manageable by any privileged role
     const canManage = !item.createdByUserId
       ? (isAdmin || isSuperUser || isCreative)
-      : (isAdmin || isOwner);
+      : (isAdmin || isSuperUser || isOwner);
     if (!canManage) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
