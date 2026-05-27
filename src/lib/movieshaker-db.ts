@@ -9,12 +9,22 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false },
 });
 
+function normalizeRoleValue(raw: string | null): string | null {
+  if (!raw) return null;
+  const lower = raw.toLowerCase().replace(/_/g, " ").trim();
+  if (lower === "super user") return "Super User";
+  if (lower === "admin") return "Admin";
+  if (lower === "user") return "User";
+  if (lower === "creative") return "Creative";
+  return raw;
+}
+
 export async function getUserRole(userId: string): Promise<string | null> {
   const result = await pool.query(
     "SELECT role FROM user_profile WHERE user_id = $1",
     [userId]
   );
-  return result.rows[0]?.role ?? null;
+  return normalizeRoleValue(result.rows[0]?.role ?? null);
 }
 
 export async function upsertUserRole(userId: string, role: string): Promise<void> {
